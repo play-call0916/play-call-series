@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.6</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.6.1</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -50,7 +50,7 @@
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.6</div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.6.1</div></div>
  <div id="game"></div>
 </div>
 <div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
@@ -59,7 +59,7 @@
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_06";
+const K="pc_legacy_game_061";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -185,85 +185,6 @@ const D=[
  ["🥉 6巡指名",s=>sum(s)>=11&&s.p>=4&&(s.b>=3||s.f>=3),{p:1,f:2,b:1}],
  ["🌱 UDFA",s=>true,{f:1,b:2}]
 ];
-
-function choiceCopies(card){
-  const e=card[1];
-  const pos=Math.max(e.p||0,e.f||0,e.b||0);
-  const neg=Object.values(e).some(v=>v<0);
-  // Ver.0.5: strong +2 cards are rarer; +1 / balanced cards form the core of the physical deck.
-  if(pos>=2 && !neg) return 1;
-  if(neg) return 2;
-  return 3;
-}
-function makeChoiceDeck(){
-  const deck=[];
-  C.choice.forEach(card=>{ for(let i=0;i<choiceCopies(card);i++) deck.push(card); });
-  return shuffle(deck);
-}
-function fateCopies(card){
-  const e=card[1];
-  const maxPos=Math.max(e.a||0,e.p||0,e.f||0,e.b||0);
-  const hasNeg=Object.values(e).some(v=>v<0);
-  // +3 is a true rare. Neutral/negative outcomes occupy more cards in the finite deck.
-  if(maxPos>=3) return 1;
-  if(hasNeg) return 2;
-  return 2;
-}
-function makeFateDeck(stage){
-  const deck=[];
-  (C[stage+"_fate"]||[]).forEach(card=>{for(let i=0;i<fateCopies(card);i++) deck.push(card)});
-  return shuffle(deck);
-}
-function shuffle(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function initFiniteDecks(){
-  state.choiceDeck=makeChoiceDeck();
-  state.fateDecks={
-    highschool:makeFateDeck("highschool"),
-    college:makeFateDeck("college"),
-    rookie:makeFateDeck("rookie"),
-    prime1:makeFateDeck("prime1"),
-    prime2:makeFateDeck("prime2"),
-    veteran:makeFateDeck("veteran")
-  };
-}
-function drawChoiceOffer(){
-  if(!state.choiceDeck || state.choiceDeck.length<3){
-    state.choiceDeck=makeChoiceDeck();
-  }
-  const picked=state.choiceDeck.splice(0,3);
-  state._currentOffer=picked;
-  return picked;
-}
-function resolveChoiceSelection(name){
-  const offer=state._currentOffer||[];
-  const selectedIndex=offer.findIndex(c=>c[0]===name);
-  const unselected=offer.filter((_,i)=>i!==selectedIndex);
-  // chosen card stays out; unselected cards return to deck, then reshuffle
-  state.choiceDeck=shuffle([...(state.choiceDeck||[]),...unselected]);
-  state._currentOffer=[];
-}
-function drawFiniteFate(stage){
-  if(!state.fateDecks) state.fateDecks={};
-  if(!state.fateDecks[stage] || state.fateDecks[stage].length===0){
-    state.fateDecks[stage]=makeFateDeck(stage);
-  }
-  return state.fateDecks[stage].shift();
-}
-
-const D=[
- ["🥇 1巡指名",s=>sum(s)>=15&&s.p>=6&&s.b>=4&&s.f>=5,{a:1,p:3,f:2,b:1}],
- ["🥈 3巡指名",s=>sum(s)>=13&&s.p>=5&&(s.b>=4||s.f>=4),{p:2,f:2,b:1}],
- ["🥉 6巡指名",s=>sum(s)>=11&&s.p>=4&&(s.b>=3||s.f>=3),{p:1,f:2,b:1}],
- ["🌱 UDFA",s=>true,{f:1,b:2}]
-];
-
 
 function basePlayer(i,type,name){
  return {id:i,type,name:name||("PLAYER "+(i+1)),icon:type==="cpu"?"🤖":"👤",
@@ -500,7 +421,7 @@ function render(){
  }
 }
 function showCareer(){
- let a=["PLAY CALL — LEGACY MODE Ver.0.6","MULTIPLAYER CAREER SUMMARY",""];
+ let a=["PLAY CALL — LEGACY MODE Ver.0.6.1","MULTIPLAYER CAREER SUMMARY",""];
  state.players.forEach((p,i)=>{
    a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
    a.push(`DRAFT：${p.draft||"-"}`);
