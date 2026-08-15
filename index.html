@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.6.1</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.7</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -50,7 +50,7 @@
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.6.1</div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.7</div></div>
  <div id="game"></div>
 </div>
 <div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
@@ -59,7 +59,7 @@
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_061";
+const K="pc_legacy_game_07";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -193,7 +193,8 @@ function basePlayer(i,type,name){
 }
 function fresh(){return{
  stage:"start",phase:"setup",players:[],active:0,round:0,logs:[],awards:[],
- choiceDeck:[],fateDecks:{},_currentOffer:[],setupHumans:1
+ choiceDeck:[],fateDecks:{},_currentOffer:[],setupHumans:1,
+ turnOrder:[],market:[],marketRound:0,marketPickIndex:0
 }}
 let state=(()=>{try{
  const s=JSON.parse(localStorage.getItem(K));
@@ -206,6 +207,79 @@ function add(s,e){["a","p","f","b"].forEach(k=>s[k]=(s[k]||0)+(e[k]||0))}
 function eff(e){return [["a","🏆"],["p","📈"],["f","🔥"],["b","🤝"]].filter(([k])=>e[k]).map(([k,x])=>x+(e[k]>0?"+":"")+e[k]).join(" ")}
 function rand(arr,n=1){return shuffle(arr).slice(0,n)}
 function current(){return state.players[state.active]}
+
+function playerCount(){return state.players.length}
+function stageOrder(){
+  return [...state.players].sort((a,b)=>{
+    const sa=statObj(a), sb=statObj(b);
+    if((sa.a||0)!==(sb.a||0)) return (sa.a||0)-(sb.a||0);
+    if((sa.p||0)!==(sb.p||0)) return (sa.p||0)-(sb.p||0);
+    if((sa.f||0)!==(sb.f||0)) return (sa.f||0)-(sb.f||0);
+    if((sa.b||0)!==(sb.b||0)) return (sa.b||0)-(sb.b||0);
+    return a.id-b.id;
+  }).map(p=>p.id);
+}
+function beginStageSelection(){
+  state.turnOrder=stageOrder();
+  state.marketRound=0;
+  state.marketPickIndex=0;
+  state.market=[];
+  state.phase="marketStart";
+}
+function drawMarket(){
+  const n=playerCount();
+  if(!state.choiceDeck || state.choiceDeck.length<n) state.choiceDeck=makeChoiceDeck();
+  state.market=state.choiceDeck.splice(0,n);
+  state.marketPickIndex=0;
+  state.phase="market";
+}
+function activeMarketPlayer(){
+  const pid=state.turnOrder[state.marketPickIndex];
+  return state.players.find(p=>p.id===pid);
+}
+function chooseMarketCard(index){
+  const p=activeMarketPlayer(); if(!p)return;
+  const c=state.market.splice(index,1)[0];
+  add(statObj(p),c[1]);
+  p.cards.push({stage:state.stage,name:c[0],tag:c[2],e:c[1],source:"choice"});
+  p.choiceCount++;
+  state.logs.push({player:p.name,icon:p.type==="cpu"?"🤖":"👤",kind:"選択",name:c[0],e:c[1]});
+  state.marketPickIndex++;
+  if(state.marketPickIndex>=state.turnOrder.length){
+    state.marketRound++;
+    if(state.marketRound>=3){
+      state.market=[];
+      state.phase="fateStageStart";
+      state.active=state.turnOrder[0]||0;
+    }else drawMarket();
+  }
+  save();render();
+}
+function cpuChooseMarket(){
+  const p=activeMarketPlayer(); if(!p)return;
+  let best=0,bestScore=-1e9;
+  state.market.forEach((c,i)=>{const sc=cpuScore(c[1],p);if(sc>bestScore){bestScore=sc;best=i}});
+  chooseMarketCard(best);
+}
+function beginFateStage(){
+  state.active=state.turnOrder[0]??0;
+  prepareFateForActive(); save(); render();
+}
+function prepareFateForActive(){
+  const p=current(); if(!p){finishStage();return}
+  if(p.fateCount<fateTarget(state.stage)){
+    p.draw=drawFiniteFate(state.stage);
+    state.phase=p.type==="human"?"handoffFate":"cpuFate";
+  }else nextFatePlayer();
+}
+function nextFatePlayer(){
+  const pid=current()?.id;
+  const idx=state.turnOrder.indexOf(pid);
+  if(idx>=0 && idx<state.turnOrder.length-1){
+    state.active=state.turnOrder[idx+1];
+    prepareFateForActive();
+  }else finishStage();
+}
 function statObj(p){return ["highschool","college","draft"].includes(state.stage)?p.student:p.nfl}
 function fateTarget(stage){return stage==="highschool"?2:stage==="college"?3:["rookie","prime1","prime2","veteran"].includes(stage)?3:0}
 function stageChoiceTarget(stage){return ["highschool","college"].includes(stage)?1:3}
@@ -219,7 +293,7 @@ function cardHTML(x){let [n,e,t]=x;return `<button class=card onclick='humanChoo
 function makeSetup(){
  return `<div class=panel><div class=stage>BOARD GAME MODE</div><h2>PLAYERS</h2><p class=desc>PLAY CALLは対人ボードゲーム。人間が座らない席だけCPUが担当します。1〜4人のHUMANを設定してください。</p>
  <div class=setupgrid>${[0,1,2,3].map(i=>`<div class=slot><input id=n${i} value="${i===0?"PLAYER 1":"PLAYER "+(i+1)}"><select id=t${i}><option value=human ${i===0?"selected":""}>HUMAN</option><option value=cpu ${i>0?"selected":""}>CPU</option></select></div>`).join("")}</div>
- <button class=bigbtn onclick=startGame()>GAME START</button><div class=news>Ver.0.6：HUMANとCPUは同じカード・同じステータス・同じ称号条件で進行。CPUは空席の代役です。</div></div>`;
+ <button class=bigbtn onclick=startGame()>GAME START</button><div class=news>Ver.0.7：選択カードは共通の場からドラフト。人数分のカードを公開し、全員が1枚ずつ取得×3巡。CPUも同じ場から選びます。</div></div>`;
 }
 function startGame(){
  state=fresh();
@@ -229,8 +303,8 @@ function startGame(){
    state.players.push(basePlayer(i,type,name));
  }
  initFiniteDecks();
- state.stage="highschool";state.phase="turn";state.active=0;state.round=0;
- prepareTurn();save();render();
+ state.stage="highschool";state.active=0;state.round=0;
+ beginStageSelection();save();render();
 }
 function prepareTurn(){
  const p=current(); if(!p)return;
@@ -268,14 +342,19 @@ function cpuDoFate(){
  let p=current(),c=p.draw;add(statObj(p),c[1]);p.cards.push({stage:state.stage,name:c[0],tag:c[2],e:c[1],source:"fate"});p.fateCount++;
  state.logs.push({player:p.name,icon:"🤖",kind:"運命",name:c[0],e:c[1]});afterAction();
 }
-function afterAction(){prepareTurn();save();render()}
+function afterAction(){
+ const p=current();
+ if(p && p.fateCount<fateTarget(state.stage)) prepareFateForActive();
+ else nextFatePlayer();
+ save();render()
+}
 function nextSeat(){
  if(state.active<state.players.length-1){state.active++;prepareTurn();save();render();return}
  finishStage();
 }
 function doDraftAll(){
  state.players.forEach(p=>{let d=D.find(x=>x[1](p.student));p.draft=d[0];p.nfl={a:0,p:0,f:0,b:0};add(p.nfl,d[2]);p.cards.push({stage:"draft",name:d[0],tag:"ドラフト",e:d[2],source:"draft"})});
- state.stage="rookie";resetStageCounters();state.active=0;prepareTurn();save();render();
+ state.stage="rookie";resetStageCounters();state.active=0;beginStageSelection();save();render();
 }
 function tags(p,t){return p.cards.filter(c=>c.tag===t&&["rookie","prime1","prime2","veteran"].includes(c.stage)).length}
 function hasTitle(p,needle){return p.titles.some(x=>x.name.includes(needle))}
@@ -349,15 +428,19 @@ function applyPendingTitle(p,t){
 }
 function chooseHumanTitle(idx){let p=current(),t=p._titleOptions[idx];applyPendingTitle(p,t);state.active++;advanceTitleSelection()}
 function finishStage(){
- if(state.stage==="highschool"){state.stage="college";resetStageCounters();state.active=0;prepareTurn();save();render();return}
+ if(state.stage==="highschool"){state.stage="college";resetStageCounters();state.active=0;beginStageSelection();save();render();return}
  if(state.stage==="college"){state.stage="draft";state.phase="draft";state.active=0;save();render();return}
  if(["rookie","prime1","prime2","veteran"].includes(state.stage)){awardTitles();return}
 }
 function afterAwards(){
  if(state.stage==="veteran"){state.stage="legacy";state.phase="legacy";state.active=0;computeLegacy();save();render();return}
- const map={rookie:"prime1",prime1:"prime2",prime2:"veteran"};state.stage=map[state.stage];resetStageCounters();state.active=0;prepareTurn();save();render();
+ const map={rookie:"prime1",prime1:"prime2",prime2:"veteran"};
+ state.stage=map[state.stage];resetStageCounters();state.active=0;beginStageSelection();save();render();
 }
-function resetStageCounters(){state.players.forEach(p=>{p.choiceCount=0;p.fateCount=0;p.offer=[];p.draw=null});state.logs=[];state.awards=[]}
+function resetStageCounters(){
+ state.players.forEach(p=>{p.choiceCount=0;p.fateCount=0;p.offer=[];p.draw=null});
+ state.logs=[];state.awards=[];state.market=[];state.marketRound=0;state.marketPickIndex=0;state.turnOrder=[];
+}
 function computeLegacy(){
  state.players.forEach(p=>{
   let s=p.nfl, rank="C",name="🏈 引退";
@@ -382,6 +465,16 @@ function render(){
  if(state.stage==="start"){g.innerHTML=makeSetup();return}
  let p=current(),s=p?statObj(p):{a:0,p:0,f:0,b:0};
  let head=`${progress()}<div class=stage>${LABEL[state.stage]}</div>${race()}`;
+ if(state.phase==="marketStart"){
+   g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION PHASE</div><h2>手番順</h2><p class=desc>🏆実績 → 📈成績 → 🔥努力 → 🤝物語 の低い順。すべて同点ならPLAYER番号順です。</p><div class=awards>${state.turnOrder.map((pid,i)=>{const x=state.players.find(p=>p.id===pid),ss=statObj(x);return `<div class=award><b>${i+1}. ${x.name}</b>　🏆${ss.a} 📈${ss.p} 🔥${ss.f} 🤝${ss.b}</div>`}).join("")}</div><button class=bigbtn onclick=drawMarket()>選択1巡目を開始</button></div>`;return
+ }
+ if(state.phase==="market"){
+   const mp=activeMarketPlayer(),round=state.marketRound+1,pick=state.marketPickIndex+1;
+   g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION ROUND ${round} / 3</div><div class=turnbox><div class=turnname>${mp.type==="cpu"?"🤖":"👤"} ${mp.name}</div><div class=cpu>${pick}番手 / ${state.turnOrder.length}</div></div>${stats(statObj(mp))}<p class=desc>場の${state.market.length}枚から1枚選択。取られたカードは場から消えます。</p><div class=cards>${state.market.map((c,i)=>mp.type==="human"?`<button class=card onclick=chooseMarketCard(${i})><b>${c[0]}</b><div class=effect>${eff(c[1])}</div><div class=tag>${c[2]}</div></button>`:`<div class=card><b>${c[0]}</b><div class=effect>${eff(c[1])}</div><div class=tag>${c[2]}</div></div>`).join("")}</div>${mp.type==="cpu"?`<button class=bigbtn onclick=cpuChooseMarket()>CPUの選択を見る</button>`:""}${logBox()}</div>`;return
+ }
+ if(state.phase==="fateStageStart"){
+   g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION COMPLETE</div><h2>運命フェーズへ</h2><p class=desc>3巡の選択が終了しました。次は同じ手番順で各プレイヤーが運命カードを処理します。</p>${race()}<button class=bigbtn onclick=beginFateStage()>運命カードへ</button></div>`;return
+ }
  if(state.stage==="draft"){
    g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>🏈</div><h3>DRAFT DAY</h3><p class=desc>4人の学生時代を同時に評価します。</p>${state.players.map(x=>`<div class=award><b>${x.name}</b>　📈${x.student.p} 🔥${x.student.f} 🤝${x.student.b}</div>`).join("")}<button class=bigbtn onclick=doDraftAll()>DRAFT RESULTS</button></div></div>`;return
  }
@@ -421,7 +514,7 @@ function render(){
  }
 }
 function showCareer(){
- let a=["PLAY CALL — LEGACY MODE Ver.0.6.1","MULTIPLAYER CAREER SUMMARY",""];
+ let a=["PLAY CALL — LEGACY MODE Ver.0.7","MULTIPLAYER CAREER SUMMARY",""];
  state.players.forEach((p,i)=>{
    a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
    a.push(`DRAFT：${p.draft||"-"}`);
