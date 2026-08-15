@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.5</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.6</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -31,20 +31,35 @@
 .modal{position:fixed;inset:0;background:#000c;display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}.sheet{width:100%;max-width:680px;margin:auto;background:#121720;border-radius:22px 22px 0 0;padding:18px 15px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}.summary{white-space:pre-wrap;background:#090d12;border:1px solid #303946;border-radius:13px;padding:13px;font-size:12px;line-height:1.7;color:#dce2e9}
 .footer{position:fixed;left:0;right:0;bottom:0;background:#080a0eef;backdrop-filter:blur(10px);border-top:1px solid #28313b;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}.footerin{max-width:680px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}.footer button{border:1px solid #303a47;background:#151b23;color:#e8edf3;border-radius:11px;padding:9px;font-size:11px;font-weight:800}
 @media(max-width:390px){.cards{grid-template-columns:1fr 1fr}.card{min-height:122px;padding:11px 9px}.hero h1{font-size:31px}}
+
+.setupgrid{display:grid;gap:10px;margin-top:12px}
+.slot{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;background:#0c1117;border:1px solid #303846;border-radius:14px;padding:10px}
+.slot input,.slot select{width:100%;background:#171d25;color:#f5f7fa;border:1px solid #3a4452;border-radius:10px;padding:10px;font-weight:800}
+.race{display:grid;gap:7px;margin:10px 0 14px}
+.racer{display:grid;grid-template-columns:28px 1fr auto;gap:7px;align-items:center;padding:8px 9px;border:1px solid #303846;border-radius:12px;background:#0b1016;font-size:11px}
+.racer.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.racer .vals{white-space:nowrap;color:#dce2e9;font-variant-numeric:tabular-nums}
+.turnbox{border:1px solid var(--accent);border-radius:15px;padding:12px;margin:10px 0;background:#0b1016}
+.turnname{font-size:17px;font-weight:950}.cpu{color:#9aa5b3;font-size:10px;letter-spacing:.12em}
+.handoff{text-align:center;padding:24px 8px}.handoff .who{font-size:28px;font-weight:950;margin:14px 0}
+.actionlog{display:grid;gap:6px;margin-top:10px}
+.actionrow{display:grid;grid-template-columns:26px 1fr auto;gap:7px;align-items:center;padding:8px;border-radius:10px;background:#0b1016;border:1px solid #28313b;font-size:11px}
+.awards{display:grid;gap:7px;margin-top:10px}.award{padding:9px;border-radius:10px;background:#0b1016;border:1px solid #303846;font-size:11px}
+.smallbtn{border:1px solid #303a47;background:#151b23;color:#e8edf3;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:800}
 </style>
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">DIGITAL CAREER GAME — Prototype Ver.0.5</div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.6</div></div>
  <div id="game"></div>
 </div>
-<div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW CAREER</button></div></div>
+<div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
 <div class="modal" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="sheet"><h3 style="margin-top:0">CAREER SUMMARY</h3><div id="summary" class="summary"></div><button class="ghost" onclick="document.getElementById('modal').classList.remove('show')">閉じる</button></div></div>
 <script>
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_05";
+const K="pc_legacy_game_06";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -170,313 +185,336 @@ const D=[
  ["🥉 6巡指名",s=>sum(s)>=11&&s.p>=4&&(s.b>=3||s.f>=3),{p:1,f:2,b:1}],
  ["🌱 UDFA",s=>true,{f:1,b:2}]
 ];
-const T={
- rookie:[
-  ["🏆 新人王",{a:1,p:3,f:2,b:2},s=>s.p>=8,"📈最高（デジタル版暫定：8以上）"],
-  ["⭐ オールルーキー",{p:3,f:2,b:2},s=>s.p>=7,"📈高い（デジタル版暫定：7以上）"],
-  ["🚀 将来有望株",{p:2,f:2,b:2},s=>s.p>=7&&s.b>=5,"📈7以上・🤝5以上"],
-  ["🏈 先発定着",{p:2,f:1,b:2},s=>s.p>=6,"📈6以上"],
-  ["🔥 苦労人ルーキー",{p:1,f:2,b:2},s=>s.f>=7,"🔥7以上"],
-  ["❤️ 人気者",{f:2,b:3},s=>s.b>=8,"🤝8以上"],
-  ["💪 ハードワーカー",{p:1,f:2,b:1},s=>s.f>=6&&s.p>=4,"🔥6以上・📈4以上"],
-  ["😬 期待外れ",{p:-1,b:-1},s=>true,"上記を満たさない場合"]
- ],
- prime1:[
-  ["⚡ OPOY",{p:5,b:2},s=>s.p>=16&&tag("攻撃")>=2,"📈16以上＋攻撃系2枚以上"],["🛡 DPOY",{p:5,f:2},s=>s.p>=16&&tag("守備")>=2,"📈16以上＋守備系2枚以上"],
-  ["🌟 オールプロ",{p:4,b:2},s=>s.p>=14,"📈14以上"],["💰 大型契約",{p:4,b:3},s=>s.p>=12&&s.b>=10,"📈12以上・🤝10以上"],
-  ["📖 記録更新",{p:5,f:1,b:2},s=>s.p>=15&&s.f>=10,"📈15以上・🔥10以上"],["💪 鉄人",{p:2,f:3,b:1},s=>s.f>=13&&tag("怪我")==0,"🔥13以上・怪我なし"],
-  ["🔄 復活賞",{p:2,f:4,b:1},s=>s.f>=12&&tag("怪我")>=1,"🔥12以上・怪我1枚以上"],["🚑 怪我に苦しんだ",{p:-3,f:2,b:1},s=>tag("怪我")>=2||s.p<10,"怪我2枚以上 または 📈10未満"]
- ],
- prime2:[
-  ["👑 MVP",{a:3,p:4,b:1},s=>s.p>=18&&hasAny(["⚡ OPOY","🛡 DPOY","🌟 オールプロ","📖 記録更新"]),"📈18以上＋指定Prime①称号"],
-  ["🏆 SB制覇",{a:4,f:2,b:3},s=>s.p>=15&&s.b>=12,"📈15以上・🤝12以上"],["⭐ スーパースター",{p:4,b:4},s=>s.p>=16&&s.b>=14,"📈16以上・🤝14以上"],
-  ["🎤 リーグの顔",{p:2,b:6},s=>s.b>=18&&hasAny(["💰 大型契約","🌟 オールプロ"]),"🤝18以上＋大型契約/オールプロ"],
-  ["🔥 執念の男",{f:4,b:2},s=>s.f>=15&&hasAny(["🔄 復活賞","🚑 怪我に苦しんだ","💪 鉄人"]),"🔥15以上＋指定Prime①称号"],
-  ["❤️ ファン人気No.1",{f:2,b:5},s=>s.b>=18,"🤝18以上"],["🫡 チームキャプテン",{f:2,b:4},s=>s.f>=12&&s.b>=15,"🔥12以上・🤝15以上"],
-  ["🧳 ジャーニーマン",{p:1,b:-1},s=>tag("移籍")>=2,"移籍系2枚以上"]
- ],
- veteran:[
-  ["🌟 チームレジェンド",{a:1,p:1,f:1,b:4},s=>s.b>=18&&hasAny(["🫡 チームキャプテン","❤️ ファン人気No.1"]),"🤝18以上＋指定Prime②称号"],
-  ["👑 フランチャイズプレイヤー",{p:2,f:1,b:5},s=>s.b>=20&&hasAny(["⭐ スーパースター","🎤 リーグの顔"]),"🤝20以上＋指定Prime②称号"],
-  ["🤝 チーム一筋",{f:1,b:7},s=>s.b>=22&&tag("移籍")==0,"🤝22以上・移籍なし"],["❤️ ウォルター・ペイトン賞",{p:1,f:2,b:5},s=>s.b>=20&&tag("社会貢献")>=2,"🤝20以上・社会貢献2枚以上"],
-  ["🏅 殿堂入り候補",{a:1,p:2,b:2},s=>s.a>=6&&s.p>=24,"🏆6以上・📈24以上"],["💪 鉄人ベテラン",{p:2,f:3,b:1},s=>s.f>=18&&tag("怪我")==0,"🔥18以上・怪我なし"],
-  ["🎤 引退ツアー",{p:1,f:1,b:5},s=>s.b>=22&&hasAny(["❤️ ファン人気No.1","🎤 リーグの顔"]),"🤝22以上＋指定Prime②称号"],["📉 忘れられたベテラン",{p:-1,b:-1},s=>true,"上記を満たさない場合"]
- ]
-};
-const L=[
- ["SS","🌌 Living Legend",s=>s.a>=9&&s.p>=36&&s.f>=22&&s.b>=22&&has("👑 MVP")&&has("🏅 殿堂入り候補")],
- ["S","👑 GOAT",s=>s.a>=9&&s.p>=32&&has("👑 MVP")&&has("🏅 殿堂入り候補")],
- ["S","🏆 Hall of Fame",s=>s.a>=7&&s.p>=28&&has("🏅 殿堂入り候補")],
- ["S","❤️ People's Champion",s=>s.b>=28&&has("❤️ ファン人気No.1")&&has("🎤 引退ツアー")],
- ["S","⚔ Legendary Underdog",s=>s.f>=28&&has("🔥 苦労人ルーキー")&&(has("🔄 復活賞")||has("🔥 執念の男"))],
- ["A","🌟 Franchise Legend",s=>s.b>=28&&has("👑 フランチャイズプレイヤー")],
- ["A","🏈 Team Legend",s=>s.b>=23&&has("🌟 チームレジェンド")],
- ["A","🌱 Cinderella Story",s=>state.draft.includes("UDFA")&&s.f>=23&&s.b>=23],
- ["A","⭐ Superstar",s=>s.p>=30&&has("⭐ スーパースター")],
- ["A","👑 Face of the League",s=>s.b>=28&&has("🎤 リーグの顔")],
- ["A","🤝 Heart & Soul",s=>s.b>=23&&has("🫡 チームキャプテン")],
- ["A","💪 Iron Man",s=>s.f>=23&&(has("💪 鉄人")||has("💪 鉄人ベテラン"))],
- ["A","❤️ Walter Payton Legacy",s=>has("❤️ ウォルター・ペイトン賞")],
- ["B","🏆 Champion",s=>has("🏆 SB制覇")],["B","📖 Record Chaser",s=>has("📖 記録更新")],["B","🤝 Loyal One",s=>has("🤝 チーム一筋")],["B","🧳 Journeyman",s=>has("🧳 ジャーニーマン")],
- ["C","🏈 引退",s=>true]
+
+function choiceCopies(card){
+  const e=card[1];
+  const pos=Math.max(e.p||0,e.f||0,e.b||0);
+  const neg=Object.values(e).some(v=>v<0);
+  // Ver.0.5: strong +2 cards are rarer; +1 / balanced cards form the core of the physical deck.
+  if(pos>=2 && !neg) return 1;
+  if(neg) return 2;
+  return 3;
+}
+function makeChoiceDeck(){
+  const deck=[];
+  C.choice.forEach(card=>{ for(let i=0;i<choiceCopies(card);i++) deck.push(card); });
+  return shuffle(deck);
+}
+function fateCopies(card){
+  const e=card[1];
+  const maxPos=Math.max(e.a||0,e.p||0,e.f||0,e.b||0);
+  const hasNeg=Object.values(e).some(v=>v<0);
+  // +3 is a true rare. Neutral/negative outcomes occupy more cards in the finite deck.
+  if(maxPos>=3) return 1;
+  if(hasNeg) return 2;
+  return 2;
+}
+function makeFateDeck(stage){
+  const deck=[];
+  (C[stage+"_fate"]||[]).forEach(card=>{for(let i=0;i<fateCopies(card);i++) deck.push(card)});
+  return shuffle(deck);
+}
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function initFiniteDecks(){
+  state.choiceDeck=makeChoiceDeck();
+  state.fateDecks={
+    highschool:makeFateDeck("highschool"),
+    college:makeFateDeck("college"),
+    rookie:makeFateDeck("rookie"),
+    prime1:makeFateDeck("prime1"),
+    prime2:makeFateDeck("prime2"),
+    veteran:makeFateDeck("veteran")
+  };
+}
+function drawChoiceOffer(){
+  if(!state.choiceDeck || state.choiceDeck.length<3){
+    state.choiceDeck=makeChoiceDeck();
+  }
+  const picked=state.choiceDeck.splice(0,3);
+  state._currentOffer=picked;
+  return picked;
+}
+function resolveChoiceSelection(name){
+  const offer=state._currentOffer||[];
+  const selectedIndex=offer.findIndex(c=>c[0]===name);
+  const unselected=offer.filter((_,i)=>i!==selectedIndex);
+  // chosen card stays out; unselected cards return to deck, then reshuffle
+  state.choiceDeck=shuffle([...(state.choiceDeck||[]),...unselected]);
+  state._currentOffer=[];
+}
+function drawFiniteFate(stage){
+  if(!state.fateDecks) state.fateDecks={};
+  if(!state.fateDecks[stage] || state.fateDecks[stage].length===0){
+    state.fateDecks[stage]=makeFateDeck(stage);
+  }
+  return state.fateDecks[stage].shift();
+}
+
+const D=[
+ ["🥇 1巡指名",s=>sum(s)>=15&&s.p>=6&&s.b>=4&&s.f>=5,{a:1,p:3,f:2,b:1}],
+ ["🥈 3巡指名",s=>sum(s)>=13&&s.p>=5&&(s.b>=4||s.f>=4),{p:2,f:2,b:1}],
+ ["🥉 6巡指名",s=>sum(s)>=11&&s.p>=4&&(s.b>=3||s.f>=3),{p:1,f:2,b:1}],
+ ["🌱 UDFA",s=>true,{f:1,b:2}]
 ];
+
+
+function basePlayer(i,type,name){
+ return {id:i,type,name:name||("PLAYER "+(i+1)),icon:type==="cpu"?"🤖":"👤",
+ student:{a:0,p:0,f:0,b:0},nfl:{a:0,p:0,f:0,b:0},draft:"",
+ cards:[],titles:[],legacy:null,choiceCount:0,fateCount:0,offer:[],draw:null};
+}
 function fresh(){return{
- stage:"start",
- student:{a:0,p:0,f:0,b:0},
- nfl:{a:0,p:0,f:0,b:0},
- draft:"",
- cards:[],
- titles:[],
- phase:"intro",
- offer:[],
- draw:null,
- legacy:null,
- choiceCount:0,
- fateCount:0,
- choiceDeck:[],
- fateDecks:{},
- _currentOffer:[],
- mode:"race",
- ai:[],
- raceSnapshots:{}
+ stage:"start",phase:"setup",players:[],active:0,round:0,logs:[],awards:[],
+ choiceDeck:[],fateDecks:{},_currentOffer:[],setupHumans:1
 }}
 let state=(()=>{try{
- const s=JSON.parse(localStorage.getItem(K))||fresh();
- if(!Array.isArray(s.choiceDeck)) s.choiceDeck=[];
- if(!s.fateDecks) s.fateDecks={};
- if(!Array.isArray(s._currentOffer)) s._currentOffer=[];
- return s;
+ const s=JSON.parse(localStorage.getItem(K));
+ return s&&Array.isArray(s.players)?s:fresh()
 }catch(e){return fresh()}})();
-function aiProfiles(){return [
- {name:"ACE",style:"STAR",icon:"⚡"},{name:"GRINDER",style:"GRIT",icon:"🔥"},{name:"ICON",style:"STORY",icon:"🤝"}
-]}
-function scoreForStyle(e,style){
- if(style==="STAR") return (e.p||0)*4+(e.a||0)*3+(e.b||0)+(e.f||0);
- if(style==="GRIT") return (e.f||0)*4+(e.p||0)*2+(e.b||0)+(e.a||0)*2;
- return (e.b||0)*4+(e.p||0)*2+(e.f||0)+(e.a||0)*2;
-}
-function simAI(profile){
- let x={name:profile.name,style:profile.style,icon:profile.icon,student:{a:0,p:0,f:0,b:0},nfl:{a:0,p:0,f:0,b:0},titles:[],cards:[],snap:{}};
- // student path: choose among 3, fate follows finite stage deck
- for(const st of ["highschool","college"]){
-   let pool=shuffle(C[st+"_choice"]), offer=pool.slice(0,3); let ch=[...offer].sort((a,b)=>scoreForStyle(b[1],profile.style)-scoreForStyle(a[1],profile.style))[0]; add(x.student,ch[1]);
-   let fd=makeFateDeck(st); for(let i=0;i<fateTarget(st);i++) add(x.student,fd[i][1]);
- }
- let d=D.find(z=>z[1](x.student)); add(x.nfl,d[2]); x.draft=d[0];
- let deck=makeChoiceDeck();
- for(const st of ["rookie","prime1","prime2","veteran"]){
-   for(let k=0;k<3;k++){
-     if(deck.length<3) deck=makeChoiceDeck(); let offer=deck.splice(0,3); let ch=[...offer].sort((a,b)=>scoreForStyle(b[1],profile.style)-scoreForStyle(a[1],profile.style))[0]; add(x.nfl,ch[1]); deck=shuffle([...deck,...offer.filter(c=>c!==ch)]); x.cards.push({stage:st,tag:ch[2]});
-   }
-   let fd=makeFateDeck(st); for(let k=0;k<3;k++){let c=fd[k];add(x.nfl,c[1]);x.cards.push({stage:st,tag:c[2]})}
-   x.snap[st]={...x.nfl};
-   // conservative AI title reward: one best fitting archetype title, without player-only has() chains.
-   let cand=(T[st]||[]).filter(t=>{let p=x.nfl; if(st==="rookie") return t[0].includes("新人王")?false:(t[0].includes("オールルーキー")?p.p>=7:t[0].includes("人気")?p.b>=8:t[0].includes("ハード")?p.f>=6&&p.p>=4:true); if(st==="prime1") return t[0].includes("OPOY")||t[0].includes("DPOY")?false:(t[0].includes("オールプロ")?p.p>=14:t[0].includes("大型")?p.p>=12&&p.b>=10:true); if(st==="prime2") return !t[0].includes("MVP") && (t[0].includes("SB")?p.p>=15&&p.b>=12:true); return t[0].includes("殿堂")?p.a>=6&&p.p>=24:true});
-   if(cand.length){let t=[...cand].sort((a,b)=>scoreForStyle(b[1],profile.style)-scoreForStyle(a[1],profile.style))[0];add(x.nfl,t[1]);x.titles.push(t[0]);x.snap[st]={...x.nfl}}
- }
- return x;
-}
-function initAI(){state.ai=aiProfiles().map(simAI)}
-function raceRows(stage){
- if(!state.ai||!state.ai.length) return "";
- let rows=[{name:"YOU",icon:"🎮",s:{...state.nfl}},...state.ai.map(a=>({name:a.name,icon:a.icon,s:a.snap[stage]||a.nfl}))].sort((x,y)=>y.s.p-x.s.p||y.s.a-x.s.a);
- return `<div class=news><b>CAREER RACE — ${LABEL[stage]}</b><br>${rows.map((r,i)=>`${i+1}. ${r.icon} ${r.name}　🏆${r.s.a} 📈${r.s.p} 🔥${r.s.f} 🤝${r.s.b}`).join("<br>")}</div>`;
-}
-function aiMaxP(stage){return Math.max(...(state.ai||[]).map(a=>(a.snap[stage]||a.nfl).p),-999)}
 
 function save(){localStorage.setItem(K,JSON.stringify(state))}
-function sum(s){return s.p+s.f+s.b}
+function sum(s){return (s.p||0)+(s.f||0)+(s.b||0)}
 function add(s,e){["a","p","f","b"].forEach(k=>s[k]=(s[k]||0)+(e[k]||0))}
 function eff(e){return [["a","🏆"],["p","📈"],["f","🔥"],["b","🤝"]].filter(([k])=>e[k]).map(([k,x])=>x+(e[k]>0?"+":"")+e[k]).join(" ")}
-function rand(arr,n=1){let x=[...arr];for(let i=x.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x.slice(0,n)}
-function tag(t){return state.cards.filter(c=>c.tag===t&&["rookie","prime1","prime2","veteran"].includes(c.stage)).length}
-function has(n){return state.titles.some(x=>x.name===n)} function hasAny(a){return a.some(has)}
-function fateTarget(stage){
-  if(stage==="highschool") return 2;
-  if(stage==="college") return 3;
-  if(["rookie","prime1","prime2","veteran"].includes(stage)) return 3;
-  return 0;
-}
-function drawUniqueFate(stage){return drawFiniteFate(stage)}
-
-
-function stageHistory(stage){
- const cs=state.cards.filter(c=>c.stage===stage && (c.source==="choice"||c.source==="fate"));
- if(!cs.length) return "";
- return `<div class=stagehistory><div class=hh>このステージの履歴</div>${cs.map((c,i)=>`<div class=historyrow><span class=num>${i+1}</span><span><b>${c.name}</b><br><span style="color:#9aa5b3">${eff(c.e)}</span></span><span class=kind>${c.source==="choice"?"選択":"運命"}</span></div>`).join("")}</div>`;
-}
-function stats(s){return `<div class="stats">${[["🏆","実績",s.a],["📈","成績",s.p],["🔥","努力",s.f],["🤝","物語",s.b]].map(x=>`<div class=stat><div class=k>${x[0]} ${x[1]}</div><div class=v>${x[2]}</div></div>`).join("")}</div>`}
-
-function deckInfo(){
- if(["rookie","prime1","prime2","veteran"].includes(state.stage)){
-   const fateLeft=(state.fateDecks&&state.fateDecks[state.stage])?state.fateDecks[state.stage].length:0;
-   const choiceLeft=(state.choiceDeck||[]).length;
-   return `<div class=desc style="font-size:10px;margin-top:-3px">有限山札：選択 残り${choiceLeft}枚 ・ ${LABEL[state.stage]}運命 ${fateLeft}枚</div>`;
- }
- return "";
-}
+function rand(arr,n=1){return shuffle(arr).slice(0,n)}
+function current(){return state.players[state.active]}
+function statObj(p){return ["highschool","college","draft"].includes(state.stage)?p.student:p.nfl}
+function fateTarget(stage){return stage==="highschool"?2:stage==="college"?3:["rookie","prime1","prime2","veteran"].includes(stage)?3:0}
+function stageChoiceTarget(stage){return ["highschool","college"].includes(stage)?1:3}
 function progress(){let i=STAGES.indexOf(state.stage);return `<div class=progress>${STAGES.map((x,j)=>`<div class="dot ${j<=i?"on":""}"></div>`).join("")}</div>`}
-function start(){
+function stats(s){return `<div class="stats">${[["🏆","実績",s.a],["📈","成績",s.p],["🔥","努力",s.f],["🤝","物語",s.b]].map(x=>`<div class=stat><div class=k>${x[0]} ${x[1]}</div><div class=v>${x[2]}</div></div>`).join("")}</div>`}
+function race(){
+ if(!state.players.length)return "";
+ return `<div class=race>${state.players.map((p,i)=>{let s=statObj(p);return `<div class="racer ${i===state.active?"active":""}"><span>${p.type==="cpu"?"🤖":"👤"}</span><b>${p.name}</b><span class=vals>🏆${s.a} 📈${s.p} 🔥${s.f} 🤝${s.b}</span></div>`}).join("")}</div>`;
+}
+function cardHTML(x){let [n,e,t]=x;return `<button class=card onclick='humanChoose(${JSON.stringify(n)},${JSON.stringify(e)},${JSON.stringify(t)})'><b>${n}</b><div class=effect>${eff(e)}</div><div class=tag>${t}</div></button>`}
+function makeSetup(){
+ return `<div class=panel><div class=stage>BOARD GAME MODE</div><h2>PLAYERS</h2><p class=desc>PLAY CALLは対人ボードゲーム。人間が座らない席だけCPUが担当します。1〜4人のHUMANを設定してください。</p>
+ <div class=setupgrid>${[0,1,2,3].map(i=>`<div class=slot><input id=n${i} value="${i===0?"PLAYER 1":"PLAYER "+(i+1)}"><select id=t${i}><option value=human ${i===0?"selected":""}>HUMAN</option><option value=cpu ${i>0?"selected":""}>CPU</option></select></div>`).join("")}</div>
+ <button class=bigbtn onclick=startGame()>GAME START</button><div class=news>Ver.0.6：HUMANとCPUは同じカード・同じステータス・同じ称号条件で進行。CPUは空席の代役です。</div></div>`;
+}
+function startGame(){
  state=fresh();
+ for(let i=0;i<4;i++){
+   const type=document.getElementById("t"+i).value;
+   const name=document.getElementById("n"+i).value.trim()||("PLAYER "+(i+1));
+   state.players.push(basePlayer(i,type,name));
+ }
  initFiniteDecks();
- initAI();
- state.stage="highschool";
- state.phase="choose";
- state.choiceCount=0;
- state.fateCount=0;
- state.offer=rand(C.highschool_choice,3);
- save();render()
+ state.stage="highschool";state.phase="turn";state.active=0;state.round=0;
+ prepareTurn();save();render();
 }
-function choose(name,e,tagg){
- let target=["highschool","college"].includes(state.stage)?state.student:state.nfl;
- add(target,e);
- state.cards.push({stage:state.stage,name,tag:tagg,e,source:"choice"});
- state.choiceCount=(state.choiceCount||0)+1;
-
- if(state.stage==="highschool"||state.stage==="college"){
-   state.phase="fate";
-   state.draw=drawFiniteFate(state.stage);
- } else {
-   resolveChoiceSelection(name);
-   if(state.choiceCount<3){
-     state.phase="choose";
-     state.offer=drawChoiceOffer();
-   } else {
-     state.phase="fate";
-     state.draw=drawFiniteFate(state.stage);
-   }
+function prepareTurn(){
+ const p=current(); if(!p)return;
+ if(p.choiceCount<stageChoiceTarget(state.stage)){
+   p.offer=["highschool","college"].includes(state.stage)?rand(C[state.stage+"_choice"],3):drawChoiceOffer();
+   state.phase=p.type==="human"?"handoff":"cpuChoice";
+ }else if(p.fateCount<fateTarget(state.stage)){
+   p.draw=drawFiniteFate(state.stage); state.phase=p.type==="human"?"handoffFate":"cpuFate";
+ }else state.phase="playerDone";
+}
+function enterHumanChoice(){state.phase="choose";save();render()}
+function enterHumanFate(){state.phase="fate";save();render()}
+function resolveChoiceFor(p,name,e,tagg){
+ add(statObj(p),e);p.cards.push({stage:state.stage,name,tag:tagg,e,source:"choice"});p.choiceCount++;
+ if(!["highschool","college"].includes(state.stage)) resolveChoiceSelection(name);
+ state.logs.push({player:p.name,icon:p.type==="cpu"?"🤖":"👤",kind:"選択",name,e});
+}
+function humanChoose(name,e,tagg){let p=current();resolveChoiceFor(p,name,e,tagg);afterAction()}
+function cpuScore(e,p){
+ // CPU has a mild preference profile by seat, but obeys exactly the same card effects.
+ const style=p.id%3;
+ if(style===0)return (e.p||0)*4+(e.a||0)*3+(e.f||0)+(e.b||0);
+ if(style===1)return (e.f||0)*4+(e.p||0)*2+(e.b||0);
+ return (e.b||0)*4+(e.p||0)*2+(e.f||0);
+}
+function cpuDoChoice(){
+ let p=current(),ch=[...p.offer].sort((a,b)=>cpuScore(b[1],p)-cpuScore(a[1],p))[0];
+ resolveChoiceFor(p,ch[0],ch[1],ch[2]);afterAction();
+}
+function revealHumanFate(){
+ let p=current(),c=p.draw;add(statObj(p),c[1]);p.cards.push({stage:state.stage,name:c[0],tag:c[2],e:c[1],source:"fate"});p.fateCount++;
+ state.logs.push({player:p.name,icon:"👤",kind:"運命",name:c[0],e:c[1]});state.phase="fateResult";save();render();
+}
+function cpuDoFate(){
+ let p=current(),c=p.draw;add(statObj(p),c[1]);p.cards.push({stage:state.stage,name:c[0],tag:c[2],e:c[1],source:"fate"});p.fateCount++;
+ state.logs.push({player:p.name,icon:"🤖",kind:"運命",name:c[0],e:c[1]});afterAction();
+}
+function afterAction(){prepareTurn();save();render()}
+function nextSeat(){
+ if(state.active<state.players.length-1){state.active++;prepareTurn();save();render();return}
+ finishStage();
+}
+function doDraftAll(){
+ state.players.forEach(p=>{let d=D.find(x=>x[1](p.student));p.draft=d[0];p.nfl={a:0,p:0,f:0,b:0};add(p.nfl,d[2]);p.cards.push({stage:"draft",name:d[0],tag:"ドラフト",e:d[2],source:"draft"})});
+ state.stage="rookie";resetStageCounters();state.active=0;prepareTurn();save();render();
+}
+function tags(p,t){return p.cards.filter(c=>c.tag===t&&["rookie","prime1","prime2","veteran"].includes(c.stage)).length}
+function hasTitle(p,needle){return p.titles.some(x=>x.name.includes(needle))}
+function eligibleTitles(p,stage){
+ let s=p.nfl, arr=[];
+ if(stage==="rookie"){
+   const max=Math.max(...state.players.map(x=>x.nfl.p));
+   if(s.p===max && state.players.filter(x=>x.nfl.p===max).length===1)arr.push(["🏆 新人王",{a:1,p:3,f:2,b:2}]);
+   const top=[...state.players].sort((a,b)=>b.nfl.p-a.nfl.p).slice(0,2);
+   if(top.includes(p))arr.push(["⭐ オールルーキー",{p:3,f:2,b:2}]);
+   if(s.p>=7&&s.b>=5)arr.push(["🚀 将来有望株",{p:2,f:2,b:2}]);
+   if(s.p>=6)arr.push(["🏈 先発定着",{p:2,f:1,b:2}]);
+   if(s.f>=7)arr.push(["🔥 苦労人ルーキー",{p:1,f:2,b:2}]);
+   if(s.b>=8)arr.push(["❤️ 人気者",{f:2,b:3}]);
+   if(s.f>=6&&s.p>=4)arr.push(["💪 ハードワーカー",{p:1,f:2,b:1}]);
+   if(!arr.length)arr.push(["😬 期待外れ",{p:-1,b:-1}]);
  }
- save();render()
-}
-function revealFate(){
- let [name,e,tagg]=state.draw;
- let target=["highschool","college"].includes(state.stage)?state.student:state.nfl;
- add(target,e);
- state.cards.push({stage:state.stage,name,tag:tagg,e,source:"fate"});
- state.fateCount=(state.fateCount||0)+1;
- state.phase="fateResult";
- save();render()
-}
-
-function continueAfterFate(){
- if(state.fateCount < fateTarget(state.stage)){
-   state.phase="fate";
-   state.draw=drawFiniteFate(state.stage);
- } else {
-   state.phase="result";
+ if(stage==="prime1"){
+   const max=Math.max(...state.players.map(x=>x.nfl.p));
+   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&tags(p,"攻撃")>=2)arr.push(["⚡ OPOY",{p:5,b:2}]);
+   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&tags(p,"守備")>=2)arr.push(["🛡 DPOY",{p:5,f:2}]);
+   if(s.p>=14)arr.push(["🌟 オールプロ",{p:4,b:2}]);
+   if(s.p>=12&&s.b>=10)arr.push(["💰 大型契約",{p:4,b:3}]);
+   if(s.p>=15&&s.f>=10)arr.push(["📖 記録更新",{p:5,f:1,b:2}]);
+   if(s.f>=13&&tags(p,"怪我")===0)arr.push(["💪 鉄人",{p:2,f:3,b:1}]);
+   if(s.f>=12&&tags(p,"怪我")>=1)arr.push(["🔄 復活賞",{p:2,f:4,b:1}]);
+   if(!arr.length)arr.push(["🚑 怪我に苦しんだ",{p:-3,f:2,b:1}]);
  }
- save();render()
-}
-function nextFromStudent(){
- if(state.stage==="highschool"){
-   state.stage="college";
-   state.phase="choose";
-   state.choiceCount=0;
-   state.fateCount=0;
-   state.offer=rand(C.college_choice,3)
- } else {
-   state.stage="draft";
-   state.phase="result";
-   state.choiceCount=0;
-   state.fateCount=0;
+ if(stage==="prime2"){
+   const max=Math.max(...state.players.map(x=>x.nfl.p));
+   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&(hasTitle(p,"OPOY")||hasTitle(p,"DPOY")||hasTitle(p,"オールプロ")||hasTitle(p,"記録更新")))arr.push(["👑 MVP",{a:3,p:4,b:1}]);
+   if(s.p>=15&&s.b>=12)arr.push(["🏆 SB制覇",{a:4,f:2,b:3}]);
+   if(s.p>=16&&s.b>=14)arr.push(["⭐ スーパースター",{p:4,b:4}]);
+   if(s.b>=18)arr.push(["❤️ ファン人気No.1",{f:2,b:5}]);
+   if(s.f>=12&&s.b>=15)arr.push(["🫡 チームキャプテン",{f:2,b:4}]);
+   if(tags(p,"移籍")>=2)arr.push(["🧳 ジャーニーマン",{p:1,b:-1}]);
+   if(!arr.length)arr.push(["🏈 堅実な主力",{p:1,f:1,b:1}]);
  }
- save();render()
-}
-function doDraft(){
- let d=D.find(x=>x[1](state.student));state.draft=d[0];state.nfl={a:0,p:0,f:0,b:0};add(state.nfl,d[2]);state.cards.push({stage:"draft",name:d[0],tag:"ドラフト",e:d[2]});state.phase="drafted";save();render()
-}
-function enterNFL(){
- state.stage="rookie";
- state.phase="choose";
- state.choiceCount=0;
- state.fateCount=0;
- state.offer=drawChoiceOffer();
- save();render()
-}
-function titleOptions(){return (T[state.stage]||[]).map(x=>{
- let ok=x[2](state.nfl), reason=x[3];
- if(x[0].includes("新人王")){ok=state.nfl.p>aiMaxP("rookie");reason=`CAREER RACE Rookie終了時 📈単独1位（AI最高 ${aiMaxP("rookie")}）`}
- if(x[0].includes("オールルーキー")){let vals=[state.nfl.p,...state.ai.map(a=>a.snap.rookie.p)].sort((a,b)=>b-a);ok=state.nfl.p>=vals[1];reason="CAREER RACE Rookie終了時 📈上位2名"}
- if(x[0].includes("OPOY")){ok=tag("攻撃")>=2&&state.nfl.p>aiMaxP("prime1");reason="攻撃系2枚以上＋Prime①終了時 📈単独1位"}
- if(x[0].includes("DPOY")){ok=tag("守備")>=2&&state.nfl.p>aiMaxP("prime1");reason="守備系2枚以上＋Prime①終了時 📈単独1位"}
- if(x[0].includes("MVP")){ok=state.nfl.p>aiMaxP("prime2")&&hasAny(["⚡ OPOY","🛡 DPOY","🌟 オールプロ","📖 記録更新"]);reason="Prime②終了時 📈単独1位＋指定Prime①称号"}
- return {name:x[0],e:x[1],ok,reason}
-})}
-function takeTitle(n,e){
- add(state.nfl,e);
- state.titles.push({stage:state.stage,name:n,e});
- state.phase="titleReward";
- save();render()
-}
-
-function titleIcon(n){
- if(n.includes("新人王")) return "👑";
- if(n.includes("SB")) return "🏆";
- if(n.includes("MVP")||n.includes("OPOY")||n.includes("DPOY")) return "⚡";
- if(n.includes("殿堂")) return "🏅";
- if(n.includes("ファン")||n.includes("人気")) return "❤️";
- if(n.includes("キャプテン")) return "🫡";
- if(n.includes("ジャーニー")) return "🧳";
- if(n.includes("鉄人")||n.includes("執念")) return "🔥";
- return "🏅";
-}
-function titleCopy(n){
- const x=n.replace(/^[^ ]+ /,"");
- return `${x}。この時代を象徴する実績として、あなたのキャリアに刻まれる。`;
-}
-function finishTitleReward(){state.phase="complete";save();render()}
-function nextNFL(){
- let map={rookie:"prime1",prime1:"prime2",prime2:"veteran",veteran:"legacy"};
- state.stage=map[state.stage];
- state.choiceCount=0;
- state.fateCount=0;
- if(state.stage==="legacy"){
-   state.phase="legacy"
- }else{
-   state.phase="choose";
-   state.offer=drawChoiceOffer()
+ if(stage==="veteran"){
+   if(s.b>=18&&(hasTitle(p,"チームキャプテン")||hasTitle(p,"ファン人気")))arr.push(["🌟 チームレジェンド",{a:1,p:1,f:1,b:4}]);
+   if(s.b>=20&&(hasTitle(p,"スーパースター")||hasTitle(p,"リーグの顔")))arr.push(["👑 フランチャイズプレイヤー",{p:2,f:1,b:5}]);
+   if(s.b>=22&&tags(p,"移籍")===0)arr.push(["🤝 チーム一筋",{f:1,b:7}]);
+   if(s.b>=20&&tags(p,"社会貢献")>=2)arr.push(["❤️ ウォルター・ペイトン賞",{p:1,f:2,b:5}]);
+   if(s.a>=6&&s.p>=24)arr.push(["🏅 殿堂入り候補",{a:1,p:2,b:2}]);
+   if(s.f>=18&&tags(p,"怪我")===0)arr.push(["💪 鉄人ベテラン",{p:2,f:3,b:1}]);
+   if(!arr.length)arr.push(["📉 忘れられたベテラン",{p:-1,b:-1}]);
  }
- save();render()
+ return arr;
 }
-function autoLegacy(){let x=L.find(z=>z[2](state.nfl));state.legacy={rank:x[0],name:x[1]};save();render()}
-function restart(){if(confirm("新しいキャリアを始めますか？")){state=fresh();save();render()}}
-function cardHTML(x){let [n,e,t]=x;return `<button class=card onclick='choose(${JSON.stringify(n)},${JSON.stringify(e)},${JSON.stringify(t)})'><b>${n}</b><div class=effect>${eff(e)}</div><div class=tag>${t}</div></button>`}
+function titleScore(t,p){return cpuScore(t[1],p)+(t[1].a||0)*5}
+function awardTitles(){
+ state.awards=[];
+ state.players.forEach(p=>{
+   let opts=eligibleTitles(p,state.stage);
+   let t=p.type==="cpu"?[...opts].sort((a,b)=>titleScore(b,p)-titleScore(a,p))[0]:opts[0];
+   // Human title choice is handled later when multiple options exist.
+   p._titleOptions=opts;p._pendingTitle=t;
+ });
+ state.active=0;advanceTitleSelection();
+}
+function advanceTitleSelection(){
+ while(state.active<state.players.length && state.players[state.active].type==="cpu"){
+   applyPendingTitle(state.players[state.active],state.players[state.active]._pendingTitle);state.active++;
+ }
+ if(state.active>=state.players.length){state.phase="stageAwards";save();render();return}
+ state.phase="humanTitle";save();render();
+}
+function applyPendingTitle(p,t){
+ if(!t)return;add(p.nfl,t[1]);p.titles.push({stage:state.stage,name:t[0],e:t[1]});state.awards.push({player:p.name,title:t[0]});
+ delete p._titleOptions;delete p._pendingTitle;
+}
+function chooseHumanTitle(idx){let p=current(),t=p._titleOptions[idx];applyPendingTitle(p,t);state.active++;advanceTitleSelection()}
+function finishStage(){
+ if(state.stage==="highschool"){state.stage="college";resetStageCounters();state.active=0;prepareTurn();save();render();return}
+ if(state.stage==="college"){state.stage="draft";state.phase="draft";state.active=0;save();render();return}
+ if(["rookie","prime1","prime2","veteran"].includes(state.stage)){awardTitles();return}
+}
+function afterAwards(){
+ if(state.stage==="veteran"){state.stage="legacy";state.phase="legacy";state.active=0;computeLegacy();save();render();return}
+ const map={rookie:"prime1",prime1:"prime2",prime2:"veteran"};state.stage=map[state.stage];resetStageCounters();state.active=0;prepareTurn();save();render();
+}
+function resetStageCounters(){state.players.forEach(p=>{p.choiceCount=0;p.fateCount=0;p.offer=[];p.draw=null});state.logs=[];state.awards=[]}
+function computeLegacy(){
+ state.players.forEach(p=>{
+  let s=p.nfl, rank="C",name="🏈 引退";
+  if(s.a>=9&&s.p>=36&&s.f>=22&&s.b>=22&&hasTitle(p,"MVP")&&hasTitle(p,"殿堂入り候補")){rank="SS";name="🌌 Living Legend"}
+  else if(s.a>=9&&s.p>=32&&hasTitle(p,"MVP")&&hasTitle(p,"殿堂入り候補")){rank="S";name="👑 GOAT"}
+  else if(s.a>=7&&s.p>=28&&hasTitle(p,"殿堂入り候補")){rank="S";name="🏆 Hall of Fame"}
+  else if(s.b>=28&&(hasTitle(p,"フランチャイズ")||hasTitle(p,"チームレジェンド"))){rank="A";name="🌟 Franchise Legend"}
+  else if(s.p>=30&&hasTitle(p,"スーパースター")){rank="A";name="⭐ Superstar"}
+  else if(hasTitle(p,"SB制覇")){rank="B";name="🏆 Champion"}
+  else if(hasTitle(p,"記録更新")){rank="B";name="📖 Record Chaser"}
+  p.legacy={rank,name};
+ });
+}
+function logBox(){
+ if(!state.logs.length)return "";
+ return `<div class=actionlog>${state.logs.slice(-8).map(x=>`<div class=actionrow><span>${x.icon}</span><span><b>${x.player}</b><br>${x.name}</span><span>${eff(x.e)}</span></div>`).join("")}</div>`;
+}
+function restart(){if(confirm("新しいゲームを始めますか？")){state=fresh();save();render()}}
 function render(){
  document.documentElement.style.setProperty("--accent",COLOR[state.stage]||"#d8ab45");
- let g=document.getElementById("game");
- if(state.stage==="start"){g.innerHTML=`<div class=panel><div class=stage>CAREER SIMULATION</div><h2>あなたのNFL人生を始める</h2><p class=desc>選択はあなたが決める。運命は選べない。AI選手3人と同じ時代を走り、新人王・年間賞・最終レガシーを競います。</p><button class=bigbtn onclick=start()>NEW CAREER</button><div class=news>🎮 DIGITAL MODE：この試作版はスマホだけで最後までプレイできます。高校運命2回、大学運命3回。NFL各ステージは「選択3回＋運命3回＋称号1枚」。Ver.0.5：カード枚数そのものを確率として使用。強い+2/+3カードをレア化し、通常カードを厚くした有限山札です。AI 3人（STAR / GRIT / STORY）も同じルールでキャリアを進行します。</div></div>`;return}
- let s=["highschool","college","draft"].includes(state.stage)?state.student:state.nfl;
- let head=`${progress()}<div class=stage>${LABEL[state.stage]}</div>${stats(s)}${deckInfo()}`;
- if(state.stage==="highschool"||state.stage==="college"){
-   if(state.phase==="choose")g.innerHTML=`<div class=panel>${head}<h2>${state.stage==="highschool"?"高校を選ぶ":"進学先を選ぶ"}</h2><p class=desc>提示された3枚から、あなたの道を選択してください。進学先は1回、運命は高校2回／大学3回です。</p><div class=cards>${state.offer.map(cardHTML).join("")}</div></div>`;
-   else if(state.phase==="fate")g.innerHTML=`<div class=panel>${head}${stageHistory(state.stage)}<div class=reveal><div class=icon>🎴</div><h3>${LABEL[state.stage]} 運命カード</h3><p class=desc>ここから先はあなたには選べない。運命 ${state.fateCount+1} / ${fateTarget(state.stage)}</p><button class=bigbtn onclick=revealFate()>運命カードを引く</button></div></div>`;
-   else if(state.phase==="fateResult"){let c=state.cards[state.cards.length-1];g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=icon>${c.tag==="怪我"?"🩹":"⚡"}</div><div class=stage>運命 ${state.fateCount} / ${fateTarget(state.stage)}</div><h3>${c.name}</h3><div class=effect>${eff(c.e)}</div><div class=news>${studentNews(c.name)}</div></div>${stageHistory(state.stage)}<button class=bigbtn onclick=continueAfterFate()>${state.fateCount<fateTarget(state.stage)?"次の運命へ":"ステージ結果へ"}</button></div>`}
-   else {let c=state.cards[state.cards.length-1];g.innerHTML=`<div class=panel>${head}${stageHistory(state.stage)}<div class="reveal flash"><div class=icon>🏁</div><h3>${LABEL[state.stage]} COMPLETE</h3><div class=news>このステージで起きた出来事が、次のキャリアへ引き継がれます。</div><button class=bigbtn onclick=nextFromStudent()>${state.stage==="highschool"?"COLLEGEへ":"DRAFT DAYへ"}</button></div></div>`}
- } else if(state.stage==="draft"){
-   if(state.phase==="result")g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>🏈</div><h3>DRAFT DAY</h3><p class=desc>学生時代のすべてが、この瞬間の評価につながる。</p><div class=news>学生最終値：📈${state.student.p} / 🔥${state.student.f} / 🤝${state.student.b} / 合計${sum(state.student)}</div><button class=bigbtn onclick=doDraft()>指名を待つ</button></div></div>`;
-   else g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=icon>🎙️</div><div class=result><div class=small>WITH THE PICK...</div><div class=name>${state.draft}</div><div class=effect>${eff(state.cards[state.cards.length-1].e)}</div></div><p class=desc>ここから学生時代の属性はリセット。ドラフト称号を初期能力としてNFLキャリアが始まります。</p><button class=bigbtn onclick=enterNFL()>ENTER THE LEAGUE</button></div></div>`
- } else if(["rookie","prime1","prime2","veteran"].includes(state.stage)){
-   if(state.phase==="choose")g.innerHTML=`<div class=panel>${head}<h2>${LABEL[state.stage]} — あなたの選択</h2><p class=desc>今、この選手は何を優先する？ 3枚から1枚を選択。選択 ${state.choiceCount+1} / 3</p>${stageHistory(state.stage)}<div class=cards>${state.offer.map(cardHTML).join("")}</div></div>`;
-   else if(state.phase==="fate")g.innerHTML=`<div class=panel>${head}${stageHistory(state.stage)}<div class=reveal><div class=icon>🎴</div><h3>${LABEL[state.stage]} — 運命</h3><p class=desc>努力の先に何が待っているかは分からない。運命 ${state.fateCount+1} / 3</p><button class=bigbtn onclick=revealFate()>運命カードを引く</button></div></div>`;
-   else if(state.phase==="fateResult"){let c=state.cards[state.cards.length-1];g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=icon>${c.tag==="怪我"?"🩹":c.tag==="移籍"?"✈️":"⚡"}</div><div class=stage>${LABEL[state.stage]} — 運命 ${state.fateCount}/3</div><h3>${c.name}</h3><div class=effect>${eff(c.e)}</div><div class=news>${proNews(c.name,c.tag)}</div></div>${stageHistory(state.stage)}<button class=bigbtn onclick=continueAfterFate()>${state.fateCount<3?"次の運命へ":"称号判定へ"}</button></div>`}
-   else if(state.phase==="result"){
-     let c=state.cards[state.cards.length-1],opts=titleOptions();g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=icon>${c.tag==="怪我"?"🩹":"⚡"}</div><h3>${c.name}</h3><div class=effect>${eff(c.e)}</div><div class=news>${proNews(c.name,c.tag)}</div><div class=log>${state.cards.filter(x=>x.stage===state.stage).map(x=>`<span class=chip>${x.name}</span>`).join("")}</div></div>${raceRows(state.stage)}<h3 style="font-size:15px">獲得可能な称号</h3><div class=titlelist>${opts.map(o=>`<div class="title ${o.ok?"ok":""}"><div class=row><b>${o.name}</b><span class=badge>${o.ok?"条件達成":"未達"}</span></div><div class=reason>${o.reason}</div>${o.ok?`<button class=ghost onclick='takeTitle(${JSON.stringify(o.name)},${JSON.stringify(o.e)})'>この称号を獲得 ${eff(o.e)}</button>`:""}</div>`).join("")}</div></div>`;
-   } else if(state.phase==="titleReward"){let t=state.titles.find(x=>x.stage===state.stage);g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=stage>称号を獲得しました</div><div class=rewardcard><div class=rewardtop>${LABEL[state.stage]} TITLE CARD</div><div class=rewardicon>${titleIcon(t.name)}</div><div class=rewardname>${t.name.replace(/^[^ ]+ /,"")}</div><div class=rewardeffect>${eff(t.e)}</div><div class=rewardcopy>${titleCopy(t.name)}</div></div><button class=bigbtn onclick=finishTitleReward()>称号を獲得</button></div></div>`}
-   else {let t=state.titles.find(x=>x.stage===state.stage);g.innerHTML=`<div class=panel>${head}${stageHistory(state.stage)}<div class="reveal flash"><div class=icon>🏅</div><h3>${t.name}</h3><div class=news>${LABEL[state.stage]}を終え、キャリアに新たな称号が刻まれた。</div><button class=bigbtn onclick=nextNFL()>${state.stage==="veteran"?"RETIRE":"NEXT STAGE"}</button></div></div>`}
- } else {
-   if(!state.legacy)g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>🏟️</div><h3>YOUR CAREER IS OVER</h3><p class=desc>勝利、記録、怪我、移籍、そして人々との物語。すべてを評価します。</p><div class=news>FINAL STATUS<br>🏆${state.nfl.a}　📈${state.nfl.p}　🔥${state.nfl.f}　🤝${state.nfl.b}</div><button class=bigbtn onclick=autoLegacy()>LEGACYを発表</button></div></div>`;
-   else g.innerHTML=`<div class=panel>${head}<div class="reveal flash"><div class=stage>CAREER COMPLETE</div><div class="rewardcard legacycard"><div class=rewardtop>LEGACY CARD — ${state.legacy.rank} RANK</div><div class=rewardicon>👑</div><div class=rewardname>${state.legacy.name.replace(/^[^ ]+ /,"")}</div><div class=rewardcopy>偉大な功績と物語を残し、この選手のキャリアは永遠に語り継がれる。</div></div><button class=bigbtn onclick=showCareer()>CAREER SUMMARY</button><button class=ghost onclick=restart()>NEW CAREER</button></div></div>`
+ const g=document.getElementById("game");
+ if(state.stage==="start"){g.innerHTML=makeSetup();return}
+ let p=current(),s=p?statObj(p):{a:0,p:0,f:0,b:0};
+ let head=`${progress()}<div class=stage>${LABEL[state.stage]}</div>${race()}`;
+ if(state.stage==="draft"){
+   g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>🏈</div><h3>DRAFT DAY</h3><p class=desc>4人の学生時代を同時に評価します。</p>${state.players.map(x=>`<div class=award><b>${x.name}</b>　📈${x.student.p} 🔥${x.student.f} 🤝${x.student.b}</div>`).join("")}<button class=bigbtn onclick=doDraftAll()>DRAFT RESULTS</button></div></div>`;return
+ }
+ if(state.stage==="legacy"){
+   let sorted=[...state.players].sort((a,b)=>({SS:5,S:4,A:3,B:2,C:1}[b.legacy.rank]-{SS:5,S:4,A:3,B:2,C:1}[a.legacy.rank])||b.nfl.a-a.nfl.a||b.nfl.p-a.nfl.p);
+   g.innerHTML=`<div class=panel>${head}<div class=stage>CAREER COMPLETE</div><h2>LEGACY RANKING</h2>${sorted.map((x,i)=>`<div class=rewardcard style="margin:10px 0"><div class=rewardtop>${i+1} PLACE — ${x.legacy.rank} RANK</div><div class=rewardname style="font-size:22px">${x.name}</div><div class=rewardcopy>${x.legacy.name}<br>🏆${x.nfl.a} 📈${x.nfl.p} 🔥${x.nfl.f} 🤝${x.nfl.b}</div></div>`).join("")}<button class=bigbtn onclick=showCareer()>CAREER SUMMARY</button><button class=ghost onclick=restart()>NEW GAME</button></div>`;return
+ }
+ if(state.phase==="handoff"){
+   g.innerHTML=`<div class=panel>${head}<div class=handoff><div class=cpu>PASS THE DEVICE</div><div class=who>👤 ${p.name}</div><p class=desc>他のプレイヤーにカードを見られないよう、本人が準備できたら開いてください。</p><button class=bigbtn onclick=enterHumanChoice()>カードを見る</button></div></div>`;return
+ }
+ if(state.phase==="handoffFate"){
+   g.innerHTML=`<div class=panel>${head}<div class=handoff><div class=cpu>PASS THE DEVICE</div><div class=who>👤 ${p.name}</div><p class=desc>運命カードを引きます。</p><button class=bigbtn onclick=enterHumanFate()>運命へ</button></div></div>`;return
+ }
+ if(state.phase==="choose"){
+   g.innerHTML=`<div class=panel>${head}<div class=turnbox><div class=turnname>👤 ${p.name}</div><div class=cpu>HUMAN TURN</div></div>${stats(s)}<h3>選択 ${p.choiceCount+1} / ${stageChoiceTarget(state.stage)}</h3><div class=cards>${p.offer.map(cardHTML).join("")}</div>${logBox()}</div>`;return
+ }
+ if(state.phase==="cpuChoice"){
+   g.innerHTML=`<div class=panel>${head}<div class=turnbox><div class=turnname>🤖 ${p.name}</div><div class=cpu>CPU IS CHOOSING...</div></div>${stats(s)}<p class=desc>CPUも同じ3枚から1枚を選びます。</p><button class=bigbtn onclick=cpuDoChoice()>CPUの選択を見る</button>${logBox()}</div>`;return
+ }
+ if(state.phase==="fate"){
+   g.innerHTML=`<div class=panel>${head}<div class=turnbox><div class=turnname>👤 ${p.name}</div></div>${stats(s)}<div class=reveal><div class=icon>🎴</div><h3>運命 ${p.fateCount+1} / ${fateTarget(state.stage)}</h3><button class=bigbtn onclick=revealHumanFate()>運命カードを引く</button></div>${logBox()}</div>`;return
+ }
+ if(state.phase==="fateResult"){
+   let c=p.cards[p.cards.length-1];g.innerHTML=`<div class=panel>${head}${stats(s)}<div class="reveal flash"><div class=icon>⚡</div><h3>${c.name}</h3><div class=effect>${eff(c.e)}</div></div><button class=bigbtn onclick=afterAction()>続ける</button>${logBox()}</div>`;return
+ }
+ if(state.phase==="cpuFate"){
+   g.innerHTML=`<div class=panel>${head}<div class=turnbox><div class=turnname>🤖 ${p.name}</div><div class=cpu>CPU FATE</div></div>${stats(s)}<button class=bigbtn onclick=cpuDoFate()>CPUの運命を見る</button>${logBox()}</div>`;return
+ }
+ if(state.phase==="playerDone"){
+   g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>✅</div><h3>${p.name} — TURN COMPLETE</h3>${stats(s)}<button class=bigbtn onclick=nextSeat()>${state.active<3?"NEXT PLAYER":"STAGE RESULT"}</button></div>${logBox()}</div>`;return
+ }
+ if(state.phase==="humanTitle"){
+   let opts=p._titleOptions||[];g.innerHTML=`<div class=panel>${head}<div class=turnbox><div class=turnname>👤 ${p.name}</div><div class=cpu>TITLE CARD</div></div><p class=desc>条件を満たした称号から1枚選択します。CPUも同じ条件で1枚獲得します。</p><div class=titlelist>${opts.map((t,i)=>`<div class="title ok"><div class=row><b>${t[0]}</b><span>${eff(t[1])}</span></div><button class=ghost onclick=chooseHumanTitle(${i})>この称号を選ぶ</button></div>`).join("")}</div></div>`;return
+ }
+ if(state.phase==="stageAwards"){
+   g.innerHTML=`<div class=panel>${head}<div class=stage>${LABEL[state.stage]} AWARDS</div><h2>4人の結果</h2><div class=awards>${state.awards.map(a=>`<div class=award><b>${a.player}</b>　${a.title}</div>`).join("")}</div>${race()}<button class=bigbtn onclick=afterAwards()>${state.stage==="veteran"?"LEGACYへ":"NEXT STAGE"}</button></div>`;return
  }
 }
-function studentNews(n){return n.includes("怪我")?"思わぬアクシデント。それでもキャリアは続いていく。":n.includes("スランプ")?"評価を落とす苦しい時期。ここからどう立て直すか。":"一つの出来事が、未来のドラフト評価を変えていく。"}
-function proNews(n,t){if(t==="怪我")return "キャリアに試練が訪れた。失ったものと、そこで得たものがある。";if(t==="移籍")return "環境が変わった。この決断がレガシーを左右するかもしれない。";if(n.includes("歴史的"))return "リーグ史に残るシーズン。選手の名前が歴史に刻まれる。";return "シーズンは新たな展開を迎えた。現在の属性から称号が判定される。"}
 function showCareer(){
- let a=[];a.push("PLAY CALL — LEGACY MODE");a.push("CAREER SUMMARY\n");
- ["highschool","college","draft","rookie","prime1","prime2","veteran"].forEach(st=>{let cs=state.cards.filter(c=>c.stage===st);let tt=state.titles.find(t=>t.stage===st);if(cs.length||tt)a.push(`${LABEL[st]}：${cs.map(c=>(c.source==="choice"?"◆ ":"◇ ")+c.name).join(" → ")}${tt?` ｜ 🏅 ${tt.name}`:""}`)});
- a.push(`\nFINAL STATUS：🏆${state.nfl.a}  📈${state.nfl.p}  🔥${state.nfl.f}  🤝${state.nfl.b}`);a.push(`LEGACY：${state.legacy?state.legacy.rank+" — "+state.legacy.name:"未決定"}`); if(state.ai&&state.ai.length){a.push("\nAI CAREER RIVALS");state.ai.forEach(x=>a.push(`${x.icon} ${x.name}：🏆${x.nfl.a} 📈${x.nfl.p} 🔥${x.nfl.f} 🤝${x.nfl.b}`))}
+ let a=["PLAY CALL — LEGACY MODE Ver.0.6","MULTIPLAYER CAREER SUMMARY",""];
+ state.players.forEach((p,i)=>{
+   a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
+   a.push(`DRAFT：${p.draft||"-"}`);
+   ["rookie","prime1","prime2","veteran"].forEach(st=>{
+     const t=p.titles.find(x=>x.stage===st); if(t)a.push(`${LABEL[st]}：${t.name}`);
+   });
+   a.push(`FINAL：🏆${p.nfl.a} 📈${p.nfl.p} 🔥${p.nfl.f} 🤝${p.nfl.b}`);
+   if(p.legacy)a.push(`LEGACY：${p.legacy.rank} — ${p.legacy.name}`);
+   a.push("");
+ });
  document.getElementById("summary").textContent=a.join("\n");document.getElementById("modal").classList.add("show")
 }
 render();
+
 </script>
 </body>
 </html>
