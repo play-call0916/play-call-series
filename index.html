@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.7</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.7.1</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -50,7 +50,7 @@
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.7</div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.7.1</div></div>
  <div id="game"></div>
 </div>
 <div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
@@ -59,7 +59,7 @@
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_07";
+const K="pc_legacy_game_071";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -232,6 +232,11 @@ function drawMarket(){
   state.market=state.choiceDeck.splice(0,n);
   state.marketPickIndex=0;
   state.phase="market";
+}
+function startMarketRound(){
+  drawMarket();
+  save();
+  render();
 }
 function activeMarketPlayer(){
   const pid=state.turnOrder[state.marketPickIndex];
@@ -466,7 +471,7 @@ function render(){
  let p=current(),s=p?statObj(p):{a:0,p:0,f:0,b:0};
  let head=`${progress()}<div class=stage>${LABEL[state.stage]}</div>${race()}`;
  if(state.phase==="marketStart"){
-   g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION PHASE</div><h2>手番順</h2><p class=desc>🏆実績 → 📈成績 → 🔥努力 → 🤝物語 の低い順。すべて同点ならPLAYER番号順です。</p><div class=awards>${state.turnOrder.map((pid,i)=>{const x=state.players.find(p=>p.id===pid),ss=statObj(x);return `<div class=award><b>${i+1}. ${x.name}</b>　🏆${ss.a} 📈${ss.p} 🔥${ss.f} 🤝${ss.b}</div>`}).join("")}</div><button class=bigbtn onclick=drawMarket()>選択1巡目を開始</button></div>`;return
+   g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION PHASE</div><h2>手番順</h2><p class=desc>🏆実績 → 📈成績 → 🔥努力 → 🤝物語 の低い順。すべて同点ならPLAYER番号順です。</p><div class=awards>${state.turnOrder.map((pid,i)=>{const x=state.players.find(p=>p.id===pid),ss=statObj(x);return `<div class=award><b>${i+1}. ${x.name}</b>　🏆${ss.a} 📈${ss.p} 🔥${ss.f} 🤝${ss.b}</div>`}).join("")}</div><button class=bigbtn onclick=startMarketRound()>選択1巡目を開始</button></div>`;return
  }
  if(state.phase==="market"){
    const mp=activeMarketPlayer(),round=state.marketRound+1,pick=state.marketPickIndex+1;
@@ -514,7 +519,7 @@ function render(){
  }
 }
 function showCareer(){
- let a=["PLAY CALL — LEGACY MODE Ver.0.7","MULTIPLAYER CAREER SUMMARY",""];
+ let a=["PLAY CALL — LEGACY MODE Ver.0.7.1","MULTIPLAYER CAREER SUMMARY",""];
  state.players.forEach((p,i)=>{
    a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
    a.push(`DRAFT：${p.draft||"-"}`);
