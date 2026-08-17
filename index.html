@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.8</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.8.1</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -46,13 +46,13 @@
 .actionrow{display:grid;grid-template-columns:26px 1fr auto;gap:7px;align-items:center;padding:8px;border-radius:10px;background:#0b1016;border:1px solid #28313b;font-size:11px}
 .awards{display:grid;gap:7px;margin-top:10px}.award{padding:9px;border-radius:10px;background:#0b1016;border:1px solid #303846;font-size:11px}
 .smallbtn{border:1px solid #303a47;background:#151b23;color:#e8edf3;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:800}
-.legacygrid{display:grid;gap:9px;margin-top:10px}.legacycompact{border:1px solid #3a4452;border-left:4px solid var(--accent);border-radius:14px;background:linear-gradient(145deg,#121821,#090d12);padding:10px 11px}.legacycompact.first{border-color:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent),0 0 20px color-mix(in srgb,var(--accent) 18%,transparent)}.legacyhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.legacyplace{font-size:10px;font-weight:950;letter-spacing:.13em;color:var(--accent)}.legacyname{font-size:18px;font-weight:950;line-height:1.15;margin-top:2px}.legacytype{font-size:9px;color:#9aa5b3;letter-spacing:.08em;white-space:nowrap}.legacytitle{font-size:11px;font-weight:850;color:#e8d28e;margin:5px 0 4px}.legacyfinal{font-size:11px;font-weight:850;letter-spacing:.01em;margin-bottom:7px}.careerpath{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;border-top:1px solid #252e39;padding-top:7px}.pathitem{display:grid;grid-template-columns:48px 1fr;gap:4px;align-items:center;min-width:0;font-size:9px;line-height:1.25}.pathk{color:#8693a2;font-weight:900}.pathv{color:#d9e0e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.draftresults{display:grid;gap:8px;margin:14px 0}.draftrow{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;border:1px solid #303846;border-radius:12px;background:#0b1016;padding:10px}.draftrow.human{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.draftplace{font-size:18px}.draftwho{font-size:13px;font-weight:900}.draftpick{font-size:12px;font-weight:950;color:#f0d477;text-align:right}
+.legacygrid{display:grid;gap:9px;margin-top:10px}.legacycompact{--rank:#8b96a6;border:2px solid color-mix(in srgb,var(--rank) 72%,#2d3642);border-left:5px solid var(--rank);border-radius:14px;background:linear-gradient(145deg,#121821,#090d12);padding:10px 11px}.legacycompact.rank-ss{--rank:#c77dff}.legacycompact.rank-s{--rank:#d8ab45}.legacycompact.rank-a{--rank:#53a7ff}.legacycompact.rank-b{--rank:#5ecf88}.legacycompact.rank-c{--rank:#8b96a6}.legacycompact.first{box-shadow:0 0 0 1px color-mix(in srgb,var(--rank) 46%,transparent),0 0 22px color-mix(in srgb,var(--rank) 20%,transparent)}.legacyhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.legacytopline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.legacyplace{font-size:10px;font-weight:950;letter-spacing:.13em;color:#aab3bf}.legacyrankchip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--rank);border-radius:999px;padding:5px 10px;background:color-mix(in srgb,var(--rank) 14%,#0b1016);color:var(--rank);font-size:12px;line-height:1;font-weight:950;letter-spacing:.08em;box-shadow:0 0 12px color-mix(in srgb,var(--rank) 14%,transparent)}.legacyname{font-size:18px;font-weight:950;line-height:1.15;margin-top:5px}.legacytype{font-size:9px;color:#9aa5b3;letter-spacing:.08em;white-space:nowrap}.legacytitle{font-size:11px;font-weight:850;color:color-mix(in srgb,var(--rank) 70%,#f4e7bf);margin:5px 0 4px}.legacyfinal{font-size:11px;font-weight:850;letter-spacing:.01em;margin-bottom:7px}.careerpath{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;border-top:1px solid #252e39;padding-top:7px}.pathitem{display:grid;grid-template-columns:48px 1fr;gap:4px;align-items:center;min-width:0;font-size:9px;line-height:1.25}.pathk{color:#8693a2;font-weight:900}.pathv{color:#d9e0e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.draftresults{display:grid;gap:8px;margin:14px 0}.draftrow{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;border:1px solid #303846;border-radius:12px;background:#0b1016;padding:10px}.draftrow.human{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.draftplace{font-size:18px}.draftwho{font-size:13px;font-weight:900}.draftpick{font-size:12px;font-weight:950;color:#f0d477;text-align:right}
 @media(min-width:540px){.legacygrid{grid-template-columns:1fr 1fr}.legacycompact{height:100%}}
 </style>
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.8 <b>[BUILD 080-RESULT-SUMMARY]</b></div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.8.1 <b>[BUILD 081-BALANCE-PASS]</b></div></div>
  <div id="game"></div>
 </div>
 <div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
@@ -61,7 +61,7 @@
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_080";
+const K="pc_legacy_game_081";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -329,7 +329,7 @@ function cardHTML(x){let [n,e,t]=x;return `<button class=card onclick='humanChoo
 function makeSetup(){
  return `<div class=panel><div class=stage>BOARD GAME MODE</div><h2>PLAYERS</h2><p class=desc>PLAY CALLは対人ボードゲーム。人間が座らない席だけCPUが担当します。1〜4人のHUMANを設定してください。</p>
  <div class=setupgrid>${[0,1,2,3].map(i=>`<div class=slot><input id=n${i} value="${i===0?"PLAYER 1":"PLAYER "+(i+1)}"><select id=t${i}><option value=human ${i===0?"selected":""}>HUMAN</option><option value=cpu ${i>0?"selected":""}>CPU</option></select></div>`).join("")}</div>
- <button class=bigbtn onclick=startGame()>GAME START</button><div class=news>Ver.0.7.4：HIGH SCHOOL / COLLEGEは学校選択を1巡のみ。ROOKIE以降は人数分公開→全員が1枚ずつ取得×3巡。CPUも同じ場から選びます。</div></div>`;
+ <button class=bigbtn onclick=startGame()>GAME START</button><div class=news>Ver.0.8.1：称号のレア度とLEGACY判定を再調整。通常キャリアの称号を増やし、歴史級実績なのにCになるケースを救済。LEGACY RANKINGはランク別カラー表示。</div></div>`;
 }
 function startGame(){
  state=fresh();
@@ -401,49 +401,71 @@ function eligibleTitles(p,stage){
  let s=p.nfl, arr=[];
  if(stage==="rookie"){
    const max=Math.max(...state.players.map(x=>x.nfl.p));
-   if(s.p===max && state.players.filter(x=>x.nfl.p===max).length===1)arr.push(["🏆 新人王",{a:1,p:3,f:2,b:2}]);
+   if(s.p>=12&&s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1)arr.push(["🏆 新人王",{a:1,p:3,f:2,b:2}]);
    const top=[...state.players].sort((a,b)=>b.nfl.p-a.nfl.p).slice(0,2);
-   if(top.includes(p))arr.push(["⭐ オールルーキー",{p:3,f:2,b:2}]);
-   if(s.p>=7&&s.b>=5)arr.push(["🚀 将来有望株",{p:2,f:2,b:2}]);
+   if(s.p>=9&&top.includes(p))arr.push(["⭐ オールルーキー",{p:3,f:2,b:2}]);
+   if(s.p>=8&&s.b>=5)arr.push(["🚀 将来有望株",{p:2,f:2,b:2}]);
    if(s.p>=6)arr.push(["🏈 先発定着",{p:2,f:1,b:2}]);
-   if(s.f>=7)arr.push(["🔥 苦労人ルーキー",{p:1,f:2,b:2}]);
-   if(s.b>=8)arr.push(["❤️ 人気者",{f:2,b:3}]);
-   if(s.f>=6&&s.p>=4)arr.push(["💪 ハードワーカー",{p:1,f:2,b:1}]);
+   if(s.f>=8)arr.push(["🔥 苦労人ルーキー",{p:1,f:2,b:2}]);
+   if(s.b>=9)arr.push(["❤️ 人気者",{f:2,b:3}]);
+   if(s.f>=7&&s.p>=4)arr.push(["💪 ハードワーカー",{p:1,f:2,b:1}]);
+   if(!arr.length&&(s.p>=4||s.f>=5||s.b>=5))arr.push(["🔄 ローテーション定着",{p:1,f:1,b:1}]);
    if(!arr.length)arr.push(["😬 期待外れ",{p:-1,b:-1}]);
  }
  if(stage==="prime1"){
    const max=Math.max(...state.players.map(x=>x.nfl.p));
-   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&tags(p,"攻撃")>=2)arr.push(["⚡ OPOY",{p:5,b:2}]);
-   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&tags(p,"守備")>=2)arr.push(["🛡 DPOY",{p:5,f:2}]);
-   if(s.p>=14)arr.push(["🌟 オールプロ",{p:4,b:2}]);
-   if(s.p>=12&&s.b>=10)arr.push(["💰 大型契約",{p:4,b:3}]);
-   if(s.p>=15&&s.f>=10)arr.push(["📖 記録更新",{p:5,f:1,b:2}]);
-   if(s.f>=13&&tags(p,"怪我")===0)arr.push(["💪 鉄人",{p:2,f:3,b:1}]);
-   if(s.f>=12&&tags(p,"怪我")>=1)arr.push(["🔄 復活賞",{p:2,f:4,b:1}]);
-   if(!arr.length)arr.push(["🚑 怪我に苦しんだ",{p:-3,f:2,b:1}]);
+   const soleTop=s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1;
+   if(s.p>=20&&soleTop&&tags(p,"攻撃")>=3)arr.push(["⚡ OPOY",{p:5,b:2}]);
+   if(s.p>=20&&soleTop&&tags(p,"守備")>=3)arr.push(["🛡 DPOY",{p:5,f:2}]);
+   if(s.p>=18)arr.push(["🌟 オールプロ",{p:4,b:2}]);
+   if(s.p>=15&&s.b>=11)arr.push(["💰 大型契約",{p:4,b:3}]);
+   if(s.p>=22&&s.f>=12)arr.push(["📖 記録更新",{p:5,f:1,b:2}]);
+   if(s.p>=14)arr.push(["🏅 プロボウル",{p:2,b:1}]);
+   if(s.p>=12&&s.f>=9)arr.push(["📈 ブレイクアウト",{p:2,f:1,b:1}]);
+   if(s.p>=10&&s.b>=11)arr.push(["🧱 チームの主力",{p:1,f:1,b:2}]);
+   if(s.f>=15&&tags(p,"怪我")===0)arr.push(["💪 鉄人",{p:2,f:3,b:1}]);
+   if(s.f>=13&&tags(p,"怪我")>=1)arr.push(["🔄 復活賞",{p:2,f:4,b:1}]);
+   if(!arr.length&&tags(p,"怪我")>=2)arr.push(["🚑 怪我に苦しんだ",{p:-2,f:2,b:1}]);
+   if(!arr.length)arr.push(["🏈 主力定着",{p:1,f:1,b:1}]);
  }
  if(stage==="prime2"){
    const max=Math.max(...state.players.map(x=>x.nfl.p));
-   if(s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1&&(hasTitle(p,"OPOY")||hasTitle(p,"DPOY")||hasTitle(p,"オールプロ")||hasTitle(p,"記録更新")))arr.push(["👑 MVP",{a:3,p:4,b:1}]);
-   if(s.p>=15&&s.b>=12)arr.push(["🏆 SB制覇",{a:4,f:2,b:3}]);
-   if(s.p>=16&&s.b>=14)arr.push(["⭐ スーパースター",{p:4,b:4}]);
-   if(s.b>=18)arr.push(["❤️ ファン人気No.1",{f:2,b:5}]);
-   if(s.f>=12&&s.b>=15)arr.push(["🫡 チームキャプテン",{f:2,b:4}]);
+   const soleTop=s.p===max&&state.players.filter(x=>x.nfl.p===max).length===1;
+   if(s.p>=28&&soleTop&&(hasTitle(p,"OPOY")||hasTitle(p,"DPOY")||hasTitle(p,"記録更新")))arr.push(["👑 MVP",{a:3,p:4,b:1}]);
+   if(s.p>=20&&s.b>=15&&s.a>=1)arr.push(["🏆 SB制覇",{a:4,f:2,b:3}]);
+   if(s.p>=20&&s.b>=16)arr.push(["⭐ スーパースター",{p:4,b:4}]);
+   if(s.b>=20)arr.push(["❤️ ファン人気No.1",{f:2,b:5}]);
+   if(s.f>=14&&s.b>=16)arr.push(["🫡 チームキャプテン",{f:2,b:4}]);
    if(tags(p,"移籍")>=2)arr.push(["🧳 ジャーニーマン",{p:1,b:-1}]);
+   if(s.p>=18)arr.push(["🌟 プロボウラー",{p:2,b:1}]);
+   if(s.p>=15&&s.f>=13)arr.push(["🧱 チームの柱",{p:1,f:1,b:2}]);
    if(!arr.length)arr.push(["🏈 堅実な主力",{p:1,f:1,b:1}]);
  }
  if(stage==="veteran"){
-   if(s.b>=18&&(hasTitle(p,"チームキャプテン")||hasTitle(p,"ファン人気")))arr.push(["🌟 チームレジェンド",{a:1,p:1,f:1,b:4}]);
-   if(s.b>=20&&(hasTitle(p,"スーパースター")||hasTitle(p,"リーグの顔")))arr.push(["👑 フランチャイズプレイヤー",{p:2,f:1,b:5}]);
-   if(s.b>=22&&tags(p,"移籍")===0)arr.push(["🤝 チーム一筋",{f:1,b:7}]);
-   if(s.b>=20&&tags(p,"社会貢献")>=2)arr.push(["❤️ ウォルター・ペイトン賞",{p:1,f:2,b:5}]);
-   if(s.a>=6&&s.p>=24)arr.push(["🏅 殿堂入り候補",{a:1,p:2,b:2}]);
-   if(s.f>=18&&tags(p,"怪我")===0)arr.push(["💪 鉄人ベテラン",{p:2,f:3,b:1}]);
-   if(!arr.length)arr.push(["📉 忘れられたベテラン",{p:-1,b:-1}]);
+   if(s.b>=26&&(hasTitle(p,"チームキャプテン")||hasTitle(p,"ファン人気")))arr.push(["🌟 チームレジェンド",{a:1,p:1,f:1,b:4}]);
+   if(s.b>=26&&hasTitle(p,"スーパースター"))arr.push(["👑 フランチャイズプレイヤー",{p:2,f:1,b:5}]);
+   if(s.b>=30&&tags(p,"移籍")===0)arr.push(["🤝 チーム一筋",{f:1,b:7}]);
+   if(s.b>=27&&tags(p,"社会貢献")>=3)arr.push(["❤️ ウォルター・ペイトン賞",{p:1,f:2,b:5}]);
+   if(s.a>=6&&s.p>=28&&(hasTitle(p,"MVP")||hasTitle(p,"OPOY")||hasTitle(p,"DPOY")||hasTitle(p,"オールプロ")))arr.push(["🏅 殿堂入り候補",{a:1,p:2,b:2}]);
+   if(s.f>=22&&tags(p,"怪我")===0)arr.push(["💪 鉄人ベテラン",{p:2,f:3,b:1}]);
+   if(s.b>=19)arr.push(["🧠 ロッカールームリーダー",{f:1,b:2}]);
+   if(s.p>=22)arr.push(["🎖️ 頼れるベテラン",{p:2,b:1}]);
+   if(s.f>=18)arr.push(["🛠️ 円熟のベテラン",{p:1,f:2}]);
+   if(tags(p,"移籍")>=2)arr.push(["🧳 渡り歩いたベテラン",{p:1,f:1}]);
+   if(!arr.length&&s.p<16&&s.b<14)arr.push(["📉 忘れられたベテラン",{p:-1,b:-1}]);
+   if(!arr.length)arr.push(["🏈 静かな引退",{p:1,b:1}]);
  }
  return arr;
 }
-function titleScore(t,p){return cpuScore(t[1],p)+(t[1].a||0)*5}
+function titlePrestige(name){
+ if(/殿堂入り候補|MVP/.test(name))return 11;
+ if(/OPOY|DPOY|SB制覇|新人王/.test(name))return 8;
+ if(/オールプロ|チームレジェンド|フランチャイズプレイヤー|ウォルター/.test(name))return 6;
+ if(/記録更新|スーパースター|チーム一筋/.test(name))return 5;
+ if(/オールルーキー|大型契約|チームキャプテン/.test(name))return 3;
+ return 0;
+}
+function titleScore(t,p){return cpuScore(t[1],p)+(t[1].a||0)*5+titlePrestige(t[0])}
 function awardTitles(){
  state.awards=[];
  state.players.forEach(p=>{
@@ -480,16 +502,35 @@ function resetStageCounters(){
  state.players.forEach(p=>{p.choiceCount=0;p.fateCount=0;p.offer=[];p.draw=null});
  state.logs=[];state.awards=[];state.market=[];state.marketRound=0;state.marketPickIndex=0;state.turnOrder=[];
 }
+function legacyCName(p){
+ const s=p.nfl;
+ if(s.p>=28||hasTitle(p,"オールプロ")||hasTitle(p,"プロボウル"))return "🏅 Respected Pro";
+ if(s.f>=28)return "💪 Grinder";
+ if(s.b>=26)return "🤝 Locker Room Veteran";
+ if(hasTitle(p,"ジャーニーマン")&&s.p<24)return "🧳 Journeyman Career";
+ if(s.p>=22)return "🧱 Longtime Starter";
+ if(s.p>=18||s.f>=18||s.b>=18)return "🏈 Solid Career";
+ return "🏈 引退";
+}
 function computeLegacy(){
  state.players.forEach(p=>{
-  let s=p.nfl, rank="C",name="🏈 引退";
-  if(s.a>=9&&s.p>=36&&s.f>=22&&s.b>=22&&hasTitle(p,"MVP")&&hasTitle(p,"殿堂入り候補")){rank="SS";name="🌌 Living Legend"}
-  else if(s.a>=9&&s.p>=32&&hasTitle(p,"MVP")&&hasTitle(p,"殿堂入り候補")){rank="S";name="👑 GOAT"}
-  else if(s.a>=7&&s.p>=28&&hasTitle(p,"殿堂入り候補")){rank="S";name="🏆 Hall of Fame"}
-  else if(s.b>=28&&(hasTitle(p,"フランチャイズ")||hasTitle(p,"チームレジェンド"))){rank="A";name="🌟 Franchise Legend"}
-  else if(s.p>=30&&hasTitle(p,"スーパースター")){rank="A";name="⭐ Superstar"}
+  const s=p.nfl;
+  const mvp=hasTitle(p,"MVP"), opoy=hasTitle(p,"OPOY"), dpoy=hasTitle(p,"DPOY");
+  const major=opoy||dpoy, hof=hasTitle(p,"殿堂入り候補"), allpro=hasTitle(p,"オールプロ");
+  let rank="C",name=legacyCName(p);
+  if(s.a>=10&&s.p>=38&&s.f>=22&&s.b>=22&&mvp&&hof){rank="SS";name="🌌 Living Legend"}
+  else if(s.a>=9&&s.p>=34&&mvp&&hof){rank="S";name="👑 GOAT"}
+  else if(s.a>=7&&s.p>=30&&hof){rank="S";name="🏆 Hall of Fame"}
+  else if(s.b>=35&&(hasTitle(p,"フランチャイズ")||hasTitle(p,"チームレジェンド")||hasTitle(p,"チーム一筋"))){rank="A";name="🌟 Franchise Legend"}
+  else if(s.p>=35&&hasTitle(p,"スーパースター")&&(mvp||major)){rank="A";name="⭐ Superstar"}
+  else if(mvp&&s.a>=6&&s.p>=34){rank="A";name="👑 League Icon"}
   else if(hasTitle(p,"SB制覇")){rank="B";name="🏆 Champion"}
-  else if(hasTitle(p,"記録更新")){rank="B";name="📖 Record Chaser"}
+  else if(hasTitle(p,"記録更新")&&s.p>=28){rank="B";name="📖 Record Chaser"}
+  else if(mvp){rank="B";name="👑 MVP Career"}
+  else if(major&&(s.p>=28||s.a>=2)){rank="B";name="🏅 Award Winner"}
+  else if(allpro&&s.p>=28&&s.a>=2){rank="B";name="🌟 All-Pro Career"}
+  else if(s.a>=4&&s.p>=30){rank="B";name="🏅 Decorated Career"}
+  else if(s.p>=36&&s.a>=2){rank="B";name="📈 Elite Production"}
   p.legacy={rank,name};
  });
 }
@@ -514,7 +555,7 @@ function compactLegacyCard(x,i){
   ["PRIME ②",stageTitleName(x,"prime2")],
   ["VETERAN",stageTitleName(x,"veteran")]
  ];
- return `<div class="legacycompact ${i===0?"first":""}"><div class=legacyhead><div><div class=legacyplace>${i+1} PLACE — ${x.legacy.rank} RANK</div><div class=legacyname>${x.name}</div></div><div class=legacytype>${x.type==="cpu"?"🤖 CPU":"👤 HUMAN"}</div></div><div class=legacytitle>${x.legacy.name}</div><div class=legacyfinal>🏆${x.nfl.a}　📈${x.nfl.p}　🔥${x.nfl.f}　🤝${x.nfl.b}</div><div class=careerpath>${path.map(([k,v])=>`<div class=pathitem><span class=pathk>${k}</span><span class=pathv title="${v}">${v}</span></div>`).join("")}</div></div>`;
+ return `<div class="legacycompact rank-${x.legacy.rank.toLowerCase()} ${i===0?"first":""}"><div class=legacyhead><div><div class=legacytopline><span class=legacyplace>${i+1} PLACE</span><span class=legacyrankchip>${x.legacy.rank} RANK</span></div><div class=legacyname>${x.name}</div></div><div class=legacytype>${x.type==="cpu"?"🤖 CPU":"👤 HUMAN"}</div></div><div class=legacytitle>${x.legacy.name}</div><div class=legacyfinal>🏆${x.nfl.a}　📈${x.nfl.p}　🔥${x.nfl.f}　🤝${x.nfl.b}</div><div class=careerpath>${path.map(([k,v])=>`<div class=pathitem><span class=pathk>${k}</span><span class=pathv title="${v}">${v}</span></div>`).join("")}</div></div>`;
 }
 function restart(){if(confirm("新しいゲームを始めますか？")){state=fresh();save();render()}}
 function render(){
@@ -575,7 +616,7 @@ function render(){
  }
 }
 function showCareer(){
- let a=["PLAY CALL — LEGACY MODE Ver.0.8","MULTIPLAYER CAREER SUMMARY",""];
+ let a=["PLAY CALL — LEGACY MODE Ver.0.8.1","MULTIPLAYER CAREER SUMMARY",""];
  state.players.forEach((p,i)=>{
    a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
    const hs=studentAt(p,"highschool"),co=studentAt(p,"college");
