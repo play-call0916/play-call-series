@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080a0e">
-<title>PLAY CALL - LEGACY MODE GAME Ver.0.7.4</title>
+<title>PLAY CALL - LEGACY MODE GAME Ver.0.8</title>
 <style>
 :root{--accent:#d8ab45;--bg:#080a0e;--panel:#121720;--line:#303846;--muted:#9aa5b3;--gold:#d8ab45}
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#263248 0,transparent 36%),linear-gradient(#090c11,#06080b);color:#f5f7fa;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;min-height:100vh}
@@ -46,11 +46,13 @@
 .actionrow{display:grid;grid-template-columns:26px 1fr auto;gap:7px;align-items:center;padding:8px;border-radius:10px;background:#0b1016;border:1px solid #28313b;font-size:11px}
 .awards{display:grid;gap:7px;margin-top:10px}.award{padding:9px;border-radius:10px;background:#0b1016;border:1px solid #303846;font-size:11px}
 .smallbtn{border:1px solid #303a47;background:#151b23;color:#e8edf3;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:800}
+.legacygrid{display:grid;gap:9px;margin-top:10px}.legacycompact{border:1px solid #3a4452;border-left:4px solid var(--accent);border-radius:14px;background:linear-gradient(145deg,#121821,#090d12);padding:10px 11px}.legacycompact.first{border-color:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent),0 0 20px color-mix(in srgb,var(--accent) 18%,transparent)}.legacyhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.legacyplace{font-size:10px;font-weight:950;letter-spacing:.13em;color:var(--accent)}.legacyname{font-size:18px;font-weight:950;line-height:1.15;margin-top:2px}.legacytype{font-size:9px;color:#9aa5b3;letter-spacing:.08em;white-space:nowrap}.legacytitle{font-size:11px;font-weight:850;color:#e8d28e;margin:5px 0 4px}.legacyfinal{font-size:11px;font-weight:850;letter-spacing:.01em;margin-bottom:7px}.careerpath{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;border-top:1px solid #252e39;padding-top:7px}.pathitem{display:grid;grid-template-columns:48px 1fr;gap:4px;align-items:center;min-width:0;font-size:9px;line-height:1.25}.pathk{color:#8693a2;font-weight:900}.pathv{color:#d9e0e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.draftresults{display:grid;gap:8px;margin:14px 0}.draftrow{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;border:1px solid #303846;border-radius:12px;background:#0b1016;padding:10px}.draftrow.human{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.draftplace{font-size:18px}.draftwho{font-size:13px;font-weight:900}.draftpick{font-size:12px;font-weight:950;color:#f0d477;text-align:right}
+@media(min-width:540px){.legacygrid{grid-template-columns:1fr 1fr}.legacycompact{height:100%}}
 </style>
 </head>
 <body>
 <div class="app">
- <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.7.4 <b>[BUILD 074-STAGE-ROUNDS]</b></div></div>
+ <div class="hero"><div class="logo">PLAY CALL SERIES</div><h1>LEGACY <span>MODE</span></h1><div class="sub">BOARD GAME COMPANION — Prototype Ver.0.8 <b>[BUILD 080-RESULT-SUMMARY]</b></div></div>
  <div id="game"></div>
 </div>
 <div class="footer"><div class="footerin"><button onclick="showCareer()">📜 CAREER</button><button onclick="restart()">↻ NEW GAME</button></div></div>
@@ -59,7 +61,7 @@
 const STAGES=["highschool","college","draft","rookie","prime1","prime2","veteran","legacy"];
 const LABEL={highschool:"HIGH SCHOOL",college:"COLLEGE",draft:"DRAFT DAY",rookie:"ROOKIE",prime1:"PRIME ①",prime2:"PRIME ②",veteran:"VETERAN",legacy:"LEGACY"};
 const COLOR={highschool:"#f1f2f4",college:"#555b63",draft:"#d8ab45",rookie:"#36c86c",prime1:"#4388ff",prime2:"#78d8ff",veteran:"#e45454",legacy:"#d8ab45"};
-const K="pc_legacy_game_074";
+const K="pc_legacy_game_080";
 const C={
  highschool_choice:[
   ["全米名門校",{p:2,b:1},"高校"],["伝統強豪校",{p:1,f:1,b:1},"高校"],["育成高校",{p:1,f:2},"高校"],["地元強豪校",{f:1,b:2},"高校"],
@@ -388,6 +390,9 @@ function nextSeat(){
 }
 function doDraftAll(){
  state.players.forEach(p=>{let d=D.find(x=>x[1](p.student));p.draft=d[0];p.nfl={a:0,p:0,f:0,b:0};add(p.nfl,d[2]);p.cards.push({stage:"draft",name:d[0],tag:"ドラフト",e:d[2],source:"draft"})});
+ state.phase="draftResult";state.active=0;save();render();
+}
+function beginRookie(){
  state.stage="rookie";resetStageCounters();state.active=0;beginStageSelection();save();render();
 }
 function tags(p,t){return p.cards.filter(c=>c.tag===t&&["rookie","prime1","prime2","veteran"].includes(c.stage)).length}
@@ -492,6 +497,25 @@ function logBox(){
  if(!state.logs.length)return "";
  return `<div class=actionlog>${state.logs.slice(-8).map(x=>`<div class=actionrow><span>${x.icon}</span><span><b>${x.player}</b><br>${x.name}</span><span>${eff(x.e)}</span></div>`).join("")}</div>`;
 }
+function studentAt(p,stage){
+ let out={a:0,p:0,f:0,b:0},order=["highschool","college"],limit=order.indexOf(stage);
+ p.cards.filter(c=>order.includes(c.stage)&&order.indexOf(c.stage)<=limit).forEach(c=>add(out,c.e||{}));
+ return out;
+}
+function stageTitleName(p,stage){const t=p.titles.find(x=>x.stage===stage);return t?t.name:"—"}
+function compactLegacyCard(x,i){
+ const hs=studentAt(x,"highschool"),co=studentAt(x,"college");
+ const path=[
+  ["HS",`📈${hs.p} 🔥${hs.f} 🤝${hs.b}`],
+  ["COLLEGE",`📈${co.p} 🔥${co.f} 🤝${co.b}`],
+  ["DRAFT",x.draft||"—"],
+  ["ROOKIE",stageTitleName(x,"rookie")],
+  ["PRIME ①",stageTitleName(x,"prime1")],
+  ["PRIME ②",stageTitleName(x,"prime2")],
+  ["VETERAN",stageTitleName(x,"veteran")]
+ ];
+ return `<div class="legacycompact ${i===0?"first":""}"><div class=legacyhead><div><div class=legacyplace>${i+1} PLACE — ${x.legacy.rank} RANK</div><div class=legacyname>${x.name}</div></div><div class=legacytype>${x.type==="cpu"?"🤖 CPU":"👤 HUMAN"}</div></div><div class=legacytitle>${x.legacy.name}</div><div class=legacyfinal>🏆${x.nfl.a}　📈${x.nfl.p}　🔥${x.nfl.f}　🤝${x.nfl.b}</div><div class=careerpath>${path.map(([k,v])=>`<div class=pathitem><span class=pathk>${k}</span><span class=pathv title="${v}">${v}</span></div>`).join("")}</div></div>`;
+}
 function restart(){if(confirm("新しいゲームを始めますか？")){state=fresh();save();render()}}
 function render(){
  document.documentElement.style.setProperty("--accent",COLOR[state.stage]||"#d8ab45");
@@ -510,11 +534,14 @@ function render(){
    g.innerHTML=`<div class=panel>${head}<div class=stage>SELECTION COMPLETE</div><h2>運命フェーズへ</h2><p class=desc>このステージの選択が終了しました。次は同じ手番順で各プレイヤーが運命カードを処理します。</p>${race()}<button class=bigbtn onclick=beginFateStage()>運命カードへ</button></div>`;return
  }
  if(state.stage==="draft"){
+   if(state.phase==="draftResult"){
+     g.innerHTML=`<div class=panel>${head}<div class=stage>DRAFT RESULTS</div><h2>指名結果</h2><p class=desc>学生時代の評価から、4人のドラフト指名巡が決定しました。</p><div class=draftresults>${state.players.map((x,i)=>`<div class="draftrow ${x.type==="human"?"human":""}"><div class=draftplace>${x.type==="human"?"👤":"🤖"}</div><div class=draftwho>${x.name}</div><div class=draftpick>${x.draft||"—"}</div></div>`).join("")}</div><button class=bigbtn onclick=beginRookie()>BEGIN ROOKIE SEASON</button></div>`;return
+   }
    g.innerHTML=`<div class=panel>${head}<div class=reveal><div class=icon>🏈</div><h3>DRAFT DAY</h3><p class=desc>4人の学生時代を同時に評価します。</p>${state.players.map(x=>`<div class=award><b>${x.name}</b>　📈${x.student.p} 🔥${x.student.f} 🤝${x.student.b}</div>`).join("")}<button class=bigbtn onclick=doDraftAll()>DRAFT RESULTS</button></div></div>`;return
  }
  if(state.stage==="legacy"){
    let sorted=[...state.players].sort((a,b)=>({SS:5,S:4,A:3,B:2,C:1}[b.legacy.rank]-{SS:5,S:4,A:3,B:2,C:1}[a.legacy.rank])||b.nfl.a-a.nfl.a||b.nfl.p-a.nfl.p);
-   g.innerHTML=`<div class=panel>${head}<div class=stage>CAREER COMPLETE</div><h2>LEGACY RANKING</h2>${sorted.map((x,i)=>`<div class=rewardcard style="margin:10px 0"><div class=rewardtop>${i+1} PLACE — ${x.legacy.rank} RANK</div><div class=rewardname style="font-size:22px">${x.name}</div><div class=rewardcopy>${x.legacy.name}<br>🏆${x.nfl.a} 📈${x.nfl.p} 🔥${x.nfl.f} 🤝${x.nfl.b}</div></div>`).join("")}<button class=bigbtn onclick=showCareer()>CAREER SUMMARY</button><button class=ghost onclick=restart()>NEW GAME</button></div>`;return
+   g.innerHTML=`<div class=panel>${head}<div class=stage>CAREER COMPLETE</div><h2>LEGACY RANKING</h2><p class=desc>最終順位とキャリア経路を1画面で比較。テスト結果の共有用サマリーです。</p><div class=legacygrid>${sorted.map(compactLegacyCard).join("")}</div><button class=bigbtn onclick=showCareer()>CAREER SUMMARY</button><button class=ghost onclick=restart()>NEW GAME</button></div>`;return
  }
  if(state.phase==="handoff"){
    g.innerHTML=`<div class=panel>${head}<div class=handoff><div class=cpu>PASS THE DEVICE</div><div class=who>👤 ${p.name}</div><p class=desc>他のプレイヤーにカードを見られないよう、本人が準備できたら開いてください。</p><button class=bigbtn onclick=enterHumanChoice()>カードを見る</button></div></div>`;return
@@ -548,9 +575,12 @@ function render(){
  }
 }
 function showCareer(){
- let a=["PLAY CALL — LEGACY MODE Ver.0.7.4","MULTIPLAYER CAREER SUMMARY",""];
+ let a=["PLAY CALL — LEGACY MODE Ver.0.8","MULTIPLAYER CAREER SUMMARY",""];
  state.players.forEach((p,i)=>{
    a.push(`${i+1}. ${p.name} [${p.type.toUpperCase()}]`);
+   const hs=studentAt(p,"highschool"),co=studentAt(p,"college");
+   a.push(`HIGH SCHOOL：📈${hs.p} 🔥${hs.f} 🤝${hs.b}`);
+   a.push(`COLLEGE：📈${co.p} 🔥${co.f} 🤝${co.b}`);
    a.push(`DRAFT：${p.draft||"-"}`);
    ["rookie","prime1","prime2","veteran"].forEach(st=>{
      const t=p.titles.find(x=>x.stage===st); if(t)a.push(`${LABEL[st]}：${t.name}`);
